@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="zh-Hans">
+<link th:fragment="css" type="text/css" rel="stylesheet" th:href="@{/css/common.css}"/>
+<link th:fragment="css" type="text/css" rel="stylesheet" th:href="@{/css/cfrank.css}"/>
+<head>
+    <meta charset="UTF-8">
+    <title>Codeforces排行榜</title>
+    <script th:src="@{/js/cfrank.js}"></script>
+</head>
+<body>
+<div th:replace="~{/header.html}"></div>
+<div class="outerBox selectorBox">
+    <div class="nameSearchBox">
+        姓名:<input type="text" id="nameInput" onchange="searchByChoice()" placeholder="请输入姓名">
+    </div>
+    <div class="gradeSelectBox">
+        年级:
+        <select id="gradeSelect" onchange="searchByChoice()">
+            <th:block th:each="grade : ${gradeList}">
+                <option th:value="${grade}" th:text="${grade}"></option>
+            </th:block>
+        </select>
+    </div>
+    <div class="majorSelectBox">
+        专业:
+        <select id="majorSelect" onchange="searchByChoice()">
+            <th:block th:each="major : ${majorList}">
+                <option th:value="${major}" th:text="${major}"></option>
+            </th:block>
+        </select>
+    </div>
+</div>
+<div class="outerBox">
+    <table>
+        <thead>
+        <tr class="RankHeader">
+            <th class="RankNum">#</th>
+            <th class="RankUser">用户名</th>
+            <th class="RankName">姓名</th>
+            <th class="RankScore">当前分数</th>
+            <th class="MaxRankScore">最高分数</th>
+            <th class="RankGrade">年级</th>
+            <th class="RankMajor">专业</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user, iterStat : ${page.records}">
+            <td class="RankNum" th:utext="${iterStat.index + 1 + (page.current - 1) * page.size}"></td>
+            <td class="RankUser" th:utext="${user.userName}"></td>
+            <td class="RankName" th:utext="${user.realName}"></td>
+            <td class="RankScore" th:utext="${user.ratingView}"></td>
+            <td class="MaxRankScore" th:utext="${user.maxRatingView}"></td>
+            <td class="RankGrade" th:utext="${user.grade}"></td>
+            <td class="RankMajor" th:utext="${user.major}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pagination outerBox">
+    <button onclick="firstPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/lleft.png}"/></button>
+    <button onclick="previousPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/left.png}"/></button>
+    第<input id="currentPage" type="text" th:value="${page.current}" onchange="gotoPage()" oninput="validateInput(this)" class="page-input"/>页
+    &nbsp;&nbsp;/&nbsp;&nbsp;共&nbsp;<span id="totalPage" th:text="${page.total / page.size + (page.total % page.size > 0 ? 1 : 0)}"/>&nbsp;页
+    <button onclick="nextPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/right.png}"/></button>
+    <button onclick="lastPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/rright.png}"/></button>
+</div>
+</body>
+</html>

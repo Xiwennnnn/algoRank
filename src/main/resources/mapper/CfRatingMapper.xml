@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.algo.data.mapper.CfRatingMapper">
+    <resultMap id="CfRatingResultMap" type="com.algo.data.vo.CfRatingVo">
+        <result column="real_name" javaType="java.lang.String" jdbcType="VARCHAR" property="realName"/>
+        <result column="grade" javaType="java.lang.String" jdbcType="VARCHAR" property="grade"/>
+        <result column="major" javaType="java.lang.String" jdbcType="VARCHAR" property="major"/>
+        <result column="cf_id" javaType="java.lang.Long" jdbcType="BIGINT" property="cfId"/>
+        <result column="user_name" javaType="java.lang.String" jdbcType="VARCHAR" property="userName"/>
+        <result column="rating" javaType="java.lang.Integer" jdbcType="INTEGER" property="rating"/>
+        <result column="cf_rank" javaType="java.lang.String" jdbcType="VARCHAR" property="cfRank"/>
+        <result column="max_rating" javaType="java.lang.Integer" jdbcType="INTEGER" property="maxRating"/>
+    </resultMap>
+<!--    <select id="getCfRatingVOs" resultMap="CfRatingResultMap">-->
+<!--        SELECT-->
+<!--            algo_user.real_name AS real_name,-->
+<!--            algo_user.grade AS grade,-->
+<!--            algo_user.major AS major,-->
+<!--            cf_rating.cf_id AS cf_id,-->
+<!--            cf_rating.user_name AS user_name,-->
+<!--            cf_rating.rating AS rating,-->
+<!--            cf_rating.cf_rank AS cf_rank,-->
+<!--            cf_rating.max_rating AS max_rating-->
+<!--        FROM algo_user LEFT JOIN cf_rating ON algo_user.cf_id = cf_rating.cf_id-->
+<!--        ORDER BY cf_rating.rating DESC-->
+<!--    </select>-->
+    <select id="getCfRatingVOs" resultMap="CfRatingResultMap">
+        SELECT
+            algo_user.real_name AS real_name,
+            algo_user.grade AS grade,
+            algo_user.major AS major,
+            cf_rating.cf_id AS cf_id,
+            cf_rating.user_name AS user_name,
+            cf_rating.rating AS rating,
+            cf_rating.cf_rank AS cf_rank,
+            cf_rating.max_rating AS max_rating
+        FROM algo_user RIGHT JOIN cf_rating ON algo_user.cf_id = cf_rating.cf_id
+        ${ew.customSqlSegment}
+        ORDER BY cf_rating.rating DESC
+    </select>
+</mapper>

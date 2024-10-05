@@ -1,0 +1,106 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: cursive, serif, sans-serif;
+}
+body::before {
+    content: "";
+    background-size: cover;
+    z-index: -1;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    opacity: 0.15;
+}
+img.platformIcon {
+    width: 20px;
+    height: 20px;
+    margin-right: 20px;
+}
+div.outerBox {
+    margin-left: 100px;
+    margin-right: 100px;
+}
+select {
+    width: 100px;
+}
+div.PlatformBox {
+    margin-left: auto;
+    margin-right: 0;
+}
+div.SelectBox {
+    margin-bottom: 10px;
+    font-size: 18px;
+    display: flex;
+    font-weight: bold;
+    padding: 10px 15px;
+}
+h1 {
+    margin-top: 25px;
+    text-align: center;
+}
+table {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    border-collapse: collapse;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+    /*border-radius: 10px; !* 圆角 *!*/
+    overflow: hidden;
+}
+th, td {
+    border: 2px #090909 solid;
+    padding: 10px 15px;
+}
+tr {
+    background: rgba(102, 102, 102, 0.22);
+    transition: box-shadow 0.3s ease; /* 增加行的过渡效果 */
+}
+tr:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 悬停时为行添加阴影 */
+}
+a.LeetCodeOJ {
+    background: url('/icon/LcIcon.png') no-repeat 100% 0;
+    background-size: 16px 16px;
+    padding-right: 19px;
+}
+a.NowCoderOJ {
+    background: url('/icon/NcIcon.ico') no-repeat 100% 0;
+    background-size: 16px 16px;
+    padding-right: 19px;
+}
+a.LuoGuOJ {
+    background: url('/icon/LgIcon.png') no-repeat 100% 0;
+    background-size: 16px 16px;
+    padding-right: 19px;
+}
+a.CodeforcesOJ {
+    background: url('/icon/CfIcon.png') no-repeat 100% 0;
+    background-size: 16px 16px;
+    padding-right: 19px;
+}
+a {
+    text-decoration: none;
+    color: black;
+}
+td.hoverTd {
+    text-decoration: none;
+    color: black;
+    transition: transform 0.3s, color 0.3s;
+}
+td.hoverTd:hover {
+    transform: scale(1.2);
+    color: rgba(32, 32, 31);
+}
+tr.Running {
+    background: rgba(3, 250, 3, 0.55);
+}
+tr.calendarHeader {
+    background: rgb(248, 248, 211);
+}
+tr.today:not(.Running) {
+    background: rgb(248, 225, 96, 0.45);
+}

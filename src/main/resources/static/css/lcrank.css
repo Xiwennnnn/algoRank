@@ -1,0 +1,159 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: cursive, serif, sans-serif;
+}
+#nameInput, #gradeSelect, #majorSelect {
+    font-family: cursive, serif, sans-serif;
+}
+div.outerBox {
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%; /* 让内容框适应页面宽度 */
+}
+
+div.selectorBox {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+div.selectorBox div {
+    margin-right: 40px;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* 偶数行背景色 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #ffffff; /* 奇数行背景色 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+
+table {
+    width: 100%;
+    border: 2px #090909 solid;
+    margin: 0 auto;
+    text-align: center;
+    border-collapse: collapse;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 表格阴影效果 */
+}
+
+th, td {
+    border: 1px #090909 solid;
+    padding: 5px 15px;
+}
+
+th.RankNum, td.RankNum {
+    width: 5%;
+}
+
+th.RankUser, td.RankUser {
+    width: 30%;
+}
+
+th.RankName, td.RankName {
+    width: 10%;
+}
+
+th.RankScore, td.RankScore {
+    width: 10%;
+}
+
+th.RankLevel, td.RankLevel {
+    width: 15%;
+}
+
+th.RankGrade, td.RankGrade {
+    width: 10%;
+}
+
+th.RankMajor, td.RankMajor {
+    width: 20%;
+}
+
+td.RankUser {
+    transition: transform 0.3s;
+}
+
+td.RankUser:hover {
+    transform: scale(1.2);
+}
+
+img.pageicon {
+    width: 20px;
+    height: 20px;
+    boder: none;
+}
+
+span.Knight {
+    z-index: 1;
+    overflow: visible;
+    position: relative;
+    text-decoration: none;
+    background: url('/images/knight.png') no-repeat 100% 0;
+    background-size: 16px auto;
+    padding-right: 19px;
+}
+
+span.Guardian {
+    z-index: 1;
+    overflow: visible;
+    position: relative;
+    text-decoration: none;
+    background: url('/images/guardian.png') no-repeat 100% 0;
+    background-size: 16px auto;
+    padding-right: 19px;
+}
+
+div.pagination {
+    display: flex;
+    justify-content: center; /* 居中对齐 */
+    align-items: center;
+    gap: 0; /* 去除间隙，按钮看起来更连贯 */
+    padding: 10px;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden; /* 确保圆角效果生效 */
+    width: auto; /* 自适应宽度 */
+    margin-left: auto;
+    margin-right: auto; /* 确保分页栏水平居中 */
+}
+
+div button {
+    color: black; /* 将按钮字体颜色设置为黑色 */
+    padding: 10px 16px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white; /* 按钮背景设置为白色 */
+}
+
+div button input {
+
+    width: 40px;
+    text-align: center;
+    border: none;
+    background: none;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.page-input {
+    font-family: cursive, serif, sans-serif;
+    font-size: 16px;
+    text-align: center;
+    width: 40px;
+    background-color: transparent;
+    border: none;
+    color: black; /* 设置输入框字体为黑色 */
+}

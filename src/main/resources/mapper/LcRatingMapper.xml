@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.algo.data.mapper.LcRatingMapper">
+    <resultMap id="CfRatingResultMap" type="com.algo.data.vo.LcRatingVo">
+        <result column="real_name" javaType="java.lang.String" jdbcType="VARCHAR" property="realName"/>
+        <result column="grade" javaType="java.lang.String" jdbcType="VARCHAR" property="grade"/>
+        <result column="major" javaType="java.lang.String" jdbcType="VARCHAR" property="major"/>
+        <result column="lc_id" javaType="java.lang.Long" jdbcType="BIGINT" property="lcId"/>
+        <result column="user_name" javaType="java.lang.String" jdbcType="VARCHAR" property="userName"/>
+        <result column="rating" javaType="java.lang.Integer" jdbcType="INTEGER" property="rating"/>
+        <result column="grading" javaType="java.lang.String" jdbcType="VARCHAR" property="grading"/>
+        <result column="nation_rank" javaType="java.lang.Integer" jdbcType="INTEGER" property="nationRank"/>
+        <result column="top_percentage" javaType="java.lang.Double" jdbcType="DOUBLE" property="topPercentage"/>
+    </resultMap>
+<!--    <select id="getLcRatingVOs" resultMap="CfRatingResultMap">-->
+<!--        SELECT-->
+<!--            algo_user.real_name AS real_name,-->
+<!--            algo_user.grade AS grade,-->
+<!--            algo_user.major AS major,-->
+<!--            lc_rating.lc_id AS lc_id,-->
+<!--            lc_rating.user_name AS user_name,-->
+<!--            lc_rating.rating AS rating,-->
+<!--            lc_rating.grading AS grading,-->
+<!--            lc_rating.nation_rank AS nation_rank,-->
+<!--            lc_rating.top_percentage AS top_percentage-->
+<!--        FROM algo_user LEFT JOIN lc_rating ON algo_user.lc_id = lc_rating.lc_id-->
+<!--        ORDER BY lc_rating.rating DESC-->
+<!--    </select>-->
+    <select id="getLcRatingVOs" resultMap="CfRatingResultMap">
+        SELECT
+            algo_user.real_name AS real_name,
+            algo_user.grade AS grade,
+            algo_user.major AS major,
+            lc_rating.lc_id AS lc_id,
+            lc_rating.user_name AS user_name,
+            lc_rating.rating AS rating,
+            lc_rating.grading AS grading,
+            lc_rating.nation_rank AS nation_rank,
+            lc_rating.top_percentage AS top_percentage
+        FROM algo_user RIGHT JOIN lc_rating ON algo_user.lc_id = lc_rating.lc_id
+        ${ew.customSqlSegment}
+        ORDER BY lc_rating.rating DESC
+    </select>
+
+</mapper>
