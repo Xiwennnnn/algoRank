@@ -1,0 +1,47 @@
+<html lang="zh-Hans" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="user-menu" class="user-menu">
+    <div class="dropdown">
+        <span class="username" th:text="${#authentication.principal.username}">用户</span>
+        <div class="dropdown-content">
+            <a href="/profile"></a>
+            <a href="/settings">设置</a>
+            <a href="/logout">退出</a>
+        </div>
+    </div>
+
+    <style>
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .username {
+            background-color: #3e8e41;
+        }
+    </style>
+</div>

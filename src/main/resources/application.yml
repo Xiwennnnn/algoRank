@@ -12,10 +12,12 @@ spring: # Spring 配置
     suffix: .html # 模板文件后缀
 
   datasource: # 数据源配置
-    url: jdbc:mysql://localhost:3306/algo_rating?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/algo_rating?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: qiu12138
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+
 
   jackson: # Jackson 配置
     time-zone: GMT+8 # 时区配置

@@ -36,4 +36,28 @@ create table if not exists algo_user(
     index idx_real_name(real_name),
     index idx_grade(grade),
     index idx_major(major)
-)
+);
+
+create table if not exists contest(
+    contest_id bigint primary key auto_increment,
+    oj varchar(100) comment 'oj名称',
+    name varchar(100) comment '比赛名称',
+    start_time datetime comment '开始时间',
+    end_time datetime comment '结束时间',
+    status varchar(100) comment '比赛状态',
+    oi_contest boolean comment '是否为OI赛制',
+    link varchar(100) unique comment '比赛链接',
+    index idx_oj(oj),
+    index idx_name(name),
+    index idx_oi_contest(oi_contest),
+    index idx_link(link)
+);
+
+create table if not exists user(
+    user_id bigint primary key auto_increment,
+    username varchar(100) unique comment '用户名',
+    password varchar(100) comment '密码',
+    is_captain boolean comment '是否是队长',
+    index idx_username(username),
+    index idx_is_captain(is_captain)
+);

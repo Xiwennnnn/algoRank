@@ -1,6 +1,7 @@
 package com.algo.data.dto;
 
 import com.algo.data.common.ContestStatus;
+import com.algo.data.dao.ContestDo;
 import lombok.Data;
 
 import java.util.Date;
@@ -41,6 +42,23 @@ public class ContestDto extends BaseDto implements Comparable<ContestDto> {
         } else if (now.after(endTime)) {
             status = ContestStatus.ENDED;
         }
+    }
+
+    public static ContestDo toDo(ContestDto dto) {
+        ContestDo dobj = new ContestDo();
+        dobj.setOj(dto.getOj());
+        dobj.setName(dto.getName());
+        dobj.setStartTime(dto.getStartTime());
+        dobj.setEndTime(dto.getEndTime());
+        dobj.setStatus(dto.getStatus());
+        dobj.setOiContest(dto.isOiContest());
+        dobj.setLink(dto.getLink());
+        return dobj;
+    }
+
+    public static ContestDto fromDo(ContestDo dobj) {
+        ContestDto dto = new ContestDto(dobj.getOj(), dobj.getName(), dobj.getStartTime(), dobj.getEndTime(), dobj.getStatus(), dobj.isOiContest(), dobj.getLink());
+        return dto;
     }
 
     @Override

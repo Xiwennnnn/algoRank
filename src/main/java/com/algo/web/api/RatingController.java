@@ -67,7 +67,6 @@ public class RatingController {
             @RequestParam(value = "major", required = false) String major
     ) {
         CfRatingQuery cfRatingQuery = new CfRatingQuery(name, grade, major);
-        System.out.println(current + " " + size + " " + cfRatingQuery);
         Page<CfRatingVo> page = new Page<>(current, size);
         return ratingService.getCfRatings(page, cfRatingQuery);
     }

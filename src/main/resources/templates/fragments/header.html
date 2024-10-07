@@ -1,0 +1,17 @@
+<html lang="zh-Hans" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<div th:fragment="header" class="header">
+    <ul class="nav">
+        <li class="left"><img src="/images/ICPC.png" alt="ICPC"/></li>
+        <th:block th:if="${#authentication.getPrincipal() == 'anonymousUser'}" >
+            <li class="right"><a href="/login">ACM队员登录</a> </li>
+        </th:block>
+        <th:block th:if="${#authentication.getPrincipal() != 'anonymousUser'}" >
+            <li class="right"><div th:replace="~{fragments/user-menu :: user-menu}"></div></li>
+        </th:block>
+        <li class="right"><a href="/calendar">算法竞赛日历</a></li>
+        <li class="right"><a href="/cfrank">Cf分数排行榜</a></li>
+        <li class="right"><a href="/lcrank">Lc分数排行榜</a></li>
+    </ul>
+</div>

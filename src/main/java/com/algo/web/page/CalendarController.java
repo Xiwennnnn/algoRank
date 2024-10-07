@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +23,6 @@ public class CalendarController {
         List<ContestDto> contests = contestController.getAcmContests();
         List<ContestVo> contestVos =  contests.stream().map(ContestLink::convert).collect(Collectors.toList());
         model.addAttribute("contests", contestVos);
-        return "index";
+        return "calendar";
     }
 }

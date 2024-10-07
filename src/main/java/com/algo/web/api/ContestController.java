@@ -46,7 +46,6 @@ public class ContestController {
             }
             return true;
         }).map(ContestLink::convert).collect(Collectors.toList());
-        System.out.println(acmContestVos);
         return acmContestVos;
     }
 

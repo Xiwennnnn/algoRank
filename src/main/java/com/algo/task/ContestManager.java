@@ -4,6 +4,7 @@ import cn.hutool.core.date.StopWatch;
 import com.algo.crawler.contest.ContestBaseCrawler;
 import com.algo.crawler.scan.CrawlerScanner;
 import com.algo.data.dto.ContestDto;
+import com.algo.service.ContestService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -23,22 +24,15 @@ import java.util.stream.Collectors;
 public class ContestManager {
     // 爬取最大重试次数
     private static final int CRAWL_MAX_RETRY = 3;
-    private static final int OJ_LIMIT = 4;
-    private static final int SUM_LIMIT = 25;
+    private static final int SUM_LIMIT = 100;
     @Resource
     private CrawlerScanner crawlerScanner;
+    @Resource
+    private ContestService contestService;
     private Map<String, Set<ContestDto>> contestMap = new ConcurrentHashMap<>();
 
     public List<ContestDto> getContests() {
         return query(x -> true);
-    }
-
-    public List<ContestDto> getAcmContests() {
-        return query(x -> !x.isOiContest());
-    }
-
-    public List<ContestDto> getOiContests() {
-        return query(x -> x.isOiContest());
     }
 
     private List<ContestDto> query(Predicate<? super ContestDto> cond) {
@@ -65,7 +59,7 @@ public class ContestManager {
     }
 
     @Async
-    @Scheduled(fixedDelay = 60 * 1000)
+    @Scheduled(fixedDelay = 30 * 60 * 1000)
     public void crawlTask() {
         StopWatch stopWatch = new StopWatch("ContestManager");
 
@@ -91,7 +85,20 @@ public class ContestManager {
         }
 
         contestMap = newMap;
+        updateContest();
         log.info("比赛信息更新完成，如下为信息获取耗时：\n" + stopWatch.prettyPrint(TimeUnit.MILLISECONDS));
+    }
+
+    @Async
+    @Scheduled(fixedDelay = 60 * 1000)
+    public void updateStatusTask() {
+        contestService.deleteOverlapContests();
+        contestService.updateStatus();
+    }
+
+    private void updateContest() {
+        List<ContestDto> allContests = getContests();
+        contestService.saveOrUpdateContest(allContests);
     }
 
     private List<ContestDto> crawlOne(ContestBaseCrawler crawler) throws Exception {

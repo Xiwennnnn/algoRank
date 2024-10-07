@@ -8,7 +8,7 @@
     <script th:src="@{/js/cfrank.js}"></script>
 </head>
 <body>
-<div th:replace="~{/header.html}"></div>
+<div th:replace="/fragments/header :: header"></div>
 <div class="outerBox selectorBox">
     <div class="nameSearchBox">
         姓名:<input type="text" id="nameInput" onchange="searchByChoice()" placeholder="请输入姓名">
