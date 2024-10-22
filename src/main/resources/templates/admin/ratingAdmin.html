@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="zh-Hans">
+<link th:fragment="css" type="text/css" rel="stylesheet" th:href="@{/css/common.css}"/>
+<link th:fragment="css" type="text/css" rel="stylesheet" th:href="@{/css/ratingAdmin.css}"/>
+<head>
+    <meta charset="UTF-8">
+    <title>Codeforces排行榜</title>
+    <script th:src="@{/js/ratingAdmin.js}"></script>
+    <link rel="icon" th:href="@{/icon/admin.png}"/>
+    <style>
+        /* 遮罩层样式 */
+        .overlay {
+            display: none; /* 初始隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+            z-index: 1000; /* 确保在最上层 */
+        }
+    </style>
+</head>
+<body>
+<div th:replace="/fragments/header.html"></div>
+<div th:replace="/admin/addRatingUser.html"></div>
+
+<!-- 遮罩层 -->
+<div class="overlay" id="overlay"></div>
+
+<div class="outerBox selectorBox">
+    <div class="nameSearchBox">
+        姓名:<input type="text" id="nameInput" onchange="searchByChoice()" placeholder="请输入姓名">
+    </div>
+    <div class="gradeSelectBox">
+        年级:
+        <select id="gradeSelect" onchange="searchByChoice()">
+            <th:block th:each="grade : ${gradeList}">
+                <option th:value="${grade}" th:text="${grade}"></option>
+            </th:block>
+        </select>
+    </div>
+    <div class="majorSelectBox">
+        专业:
+        <select id="majorSelect" onchange="searchByChoice()">
+            <th:block th:each="major : ${majorList}">
+                <option th:value="${major}" th:text="${major}"></option>
+            </th:block>
+        </select>
+    </div>
+    <div class="addBtnBox">
+        <button id="addBtn" onclick="openModal()">添加</button>
+    </div>
+
+    <!-- 添加 Excel 上传功能 -->
+    <div class="uploadExcelBox">
+        <form action="/admin/api/rating/upload" method="post" enctype="multipart/form-data">
+            <label for="excelFile">批量导入：</label>
+            <input type="file" id="excelFile" name="file" accept=".xls,.xlsx"/>
+            <button type="submit">上传Excel</button>
+        </form>
+    </div>
+</div>
+
+<div class="outerBox">
+    <table>
+        <thead>
+        <tr class="Header">
+            <th class="Num">#</th>
+            <th class="RealName">姓名</th>
+            <th class="Major">专业</th>
+            <th class="Grade">年级</th>
+            <th class="LcUsername">LeetCode用户名</th>
+            <th class="CfUsername">Codeforces用户名</th>
+            <th class="ChangeBtn">操作1</th>
+            <th class="DeleteBtn">操作2</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user, iterStat : ${page.records}" th:id="${'user-' + user.realName}">
+            <td class="Num" th:utext="${iterStat.index + 1 + (page.current - 1) * page.size}"></td>
+            <td th:class="RealName">${user.realName}</td>
+            <td class="Major"><input type="text" id="majorInput" th:value="${user.major}"/></td>
+            <td class="Grade"><input type="text" id="gradeInput" th:value="${user.grade}"/></td>
+            <td class="LcUsername"><input type="text" id="lcUsernameInput" th:value="${user.lcUsername}"/></td>
+            <td class="CfUsername"><input type="text" id="cfUsernameInput" th:value="${user.cfUsername}"/></td>
+            <td class="ChangeBtn"><button th:onclick="changeUser('${user.realName}')">修改</button></td>
+            <td class="DeleteBtn"><button th:onclick="deleteUser('${user.realName}')">删除</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pagination outerBox">
+    <button onclick="firstPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/lleft.png}"/></button>
+    <button onclick="previousPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/left.png}"/></button>
+    第<input id="currentPage" type="text" th:value="${page.current}" onchange="gotoPage()" oninput="validateInput(this)" class="page-input"/>页
+    &nbsp;&nbsp;/&nbsp;&nbsp;共&nbsp;<span id="totalPage" th:text="${page.total / page.size + (page.total % page.size > 0 ? 1 : 0)}"/>&nbsp;页
+    <button onclick="nextPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/right.png}"/></button>
+    <button onclick="lastPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/rright.png}"/></button>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById('light').style.display='block';
+        document.getElementById('overlay').style.display='block'
+    }
+</script>
+</body>
+</html>

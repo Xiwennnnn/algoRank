@@ -12,20 +12,6 @@
         <result column="nation_rank" javaType="java.lang.Integer" jdbcType="INTEGER" property="nationRank"/>
         <result column="top_percentage" javaType="java.lang.Double" jdbcType="DOUBLE" property="topPercentage"/>
     </resultMap>
-<!--    <select id="getLcRatingVOs" resultMap="CfRatingResultMap">-->
-<!--        SELECT-->
-<!--            algo_user.real_name AS real_name,-->
-<!--            algo_user.grade AS grade,-->
-<!--            algo_user.major AS major,-->
-<!--            lc_rating.lc_id AS lc_id,-->
-<!--            lc_rating.user_name AS user_name,-->
-<!--            lc_rating.rating AS rating,-->
-<!--            lc_rating.grading AS grading,-->
-<!--            lc_rating.nation_rank AS nation_rank,-->
-<!--            lc_rating.top_percentage AS top_percentage-->
-<!--        FROM algo_user LEFT JOIN lc_rating ON algo_user.lc_id = lc_rating.lc_id-->
-<!--        ORDER BY lc_rating.rating DESC-->
-<!--    </select>-->
     <select id="getLcRatingVOs" resultMap="CfRatingResultMap">
         SELECT
             algo_user.real_name AS real_name,

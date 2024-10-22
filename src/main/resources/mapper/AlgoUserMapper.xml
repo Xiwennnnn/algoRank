@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.algo.data.mapper.AlgoUserMapper">
+    <resultMap id="RatingUserResultMap" type="com.algo.data.vo.RatingUserVo">
+        <result column="real_name" javaType="java.lang.String" jdbcType="VARCHAR" property="realName"/>
+        <result column="grade" javaType="java.lang.String" jdbcType="VARCHAR" property="grade"/>
+        <result column="major" javaType="java.lang.String" jdbcType="VARCHAR" property="major"/>
+        <result column="lc_user_name" javaType="java.lang.String" jdbcType="VARCHAR" property="lcUsername"/>
+        <result column="cf_user_name" javaType="java.lang.String" jdbcType="VARCHAR" property="cfUsername"/>
+    </resultMap>
+    <select id="getRatingUsers" resultMap="RatingUserResultMap">
+        SELECT
+            algo_user.real_name AS real_name,
+            algo_user.grade AS grade,
+            algo_user.major AS major,
+            lc_rating.user_name AS lc_user_name,
+            cf_rating.user_name AS cf_user_name
+        FROM algo_user
+            LEFT JOIN lc_rating ON algo_user.lc_id = lc_rating.lc_id
+            LEFT JOIN cf_rating ON algo_user.cf_id = cf_rating.cf_id
+            ${ew.customSqlSegment}
+    </select>
+
+</mapper>

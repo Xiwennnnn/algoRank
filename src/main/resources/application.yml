@@ -12,9 +12,9 @@ spring: # Spring 配置
     suffix: .html # 模板文件后缀
 
   datasource: # 数据源配置
-    url: jdbc:mysql://localhost:3306/algo_rating?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://8.134.145.217:3306/algo_rating?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-    password: qiu12138
+    password: suanxie
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 
@@ -25,9 +25,9 @@ spring: # Spring 配置
 
   data:
     redis:
-      host: localhost
+      host: 8.134.145.217
       port: 6379
-      password: qiu12138
+      password: suanxie
       connect-timeout: 10s # 连接超时时间
       lettuce:
         pool: # Lettuce 连接池配置
@@ -36,10 +36,10 @@ spring: # Spring 配置
           max-wait: -1ms # 最大等待时间
           max-idle: 8 # 最大空闲连接数
 
+  main:
+    allow-circular-references: true
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/*Mapper.xml
-
-
 
 # 关闭devtools

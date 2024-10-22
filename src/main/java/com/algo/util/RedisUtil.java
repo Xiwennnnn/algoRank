@@ -71,7 +71,7 @@ public class RedisUtil {
      * @param value 值
      * @return true成功 false 失败
      */
-    public void set(String key, String value) {
+    public void set(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
@@ -83,7 +83,7 @@ public class RedisUtil {
      * @param time  时间(秒) -1为无期限
      * @return true成功 false 失败
      */
-    public void set(String key, String value, long time) {
+    public void set(String key, Object value, long time) {
         if (time > 0) {
             redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
         } else {
@@ -96,7 +96,7 @@ public class RedisUtil {
      *
      * @param keyAndValue
      */
-    public void batchSet(Map<String, String> keyAndValue) {
+    public void batchSet(Map<String, Object> keyAndValue) {
         redisTemplate.opsForValue().multiSet(keyAndValue);
     }
 
@@ -106,7 +106,7 @@ public class RedisUtil {
      *
      * @param keyAndValue
      */
-    public void batchSetIfAbsent(Map<String, String> keyAndValue) {
+    public void batchSetIfAbsent(Map<String, Object> keyAndValue) {
         redisTemplate.opsForValue().multiSetIfAbsent(keyAndValue);
     }
 
@@ -142,7 +142,7 @@ public class RedisUtil {
      * @param key 键
      * @return
      */
-    public void sSet(String key, String value) {
+    public void sSet(String key, Object value) {
         redisTemplate.opsForSet().add(key, value);
     }
 

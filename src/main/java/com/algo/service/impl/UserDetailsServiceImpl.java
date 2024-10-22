@@ -16,12 +16,14 @@ import java.util.Objects;
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Resource
     private UserService userService;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserVo userVo = userService.queryByUsername(username);
         if (Objects.isNull(userVo)) {
-            throw new UsernameNotFoundException("用户名不存在！");
+            throw new UsernameNotFoundException("User not found with username: " + username);
         }
+        System.out.println("User found with username: " + username);
         return new UserDto(userVo, Collections.emptyList());
     }
 }

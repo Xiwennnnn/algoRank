@@ -35,7 +35,9 @@ create table if not exists algo_user(
     foreign key (cf_id) references cf_rating (cf_id) on delete set null,
     index idx_real_name(real_name),
     index idx_grade(grade),
-    index idx_major(major)
+    index idx_major(major),
+    index idx_lc_id(lc_id),
+    index idx_cf_id(cf_id)
 );
 
 create table if not exists contest(

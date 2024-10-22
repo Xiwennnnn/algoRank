@@ -1,6 +1,7 @@
 package com.algo.data.dao;
 
 import com.algo.data.dto.ContestDto;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,8 +12,8 @@ import java.util.Date;
 @TableName("contest")
 @Data
 public class ContestDo implements Comparable<ContestDo> {
-    @TableId
-    private int contestId;
+    @TableId(value = "contest_id", type = IdType.AUTO)
+    private Integer contestId;
     private String oj;
     private String name;
     @JsonFormat(timezone = "GMT+8")

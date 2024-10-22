@@ -10,6 +10,4 @@ import java.util.Map;
 
 public interface UserService {
    public UserVo queryByUsername(String username);
-
-    public Map<String, Object> login(LoginVo loginVo);
 }

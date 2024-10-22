@@ -5,10 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Codeforces排行榜</title>
+    <link rel="icon" th:href="@{/icon/CfIcon.png}"/>
     <script th:src="@{/js/cfrank.js}"></script>
 </head>
 <body>
-<div th:replace="/fragments/header :: header"></div>
+<div th:replace="/fragments/header.html"></div>
 <div class="outerBox selectorBox">
     <div class="nameSearchBox">
         姓名:<input type="text" id="nameInput" onchange="searchByChoice()" placeholder="请输入姓名">

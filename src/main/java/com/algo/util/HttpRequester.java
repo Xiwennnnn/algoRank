@@ -16,9 +16,9 @@ public class HttpRequester {
     private static final int CONNECT_TIMEOUT = 10000;
     private static final int READ_TIMEOUT = 30000;
     private static final String USER_AGENT_KEY = "User-Agent";
-    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36";
+    //private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36";
     //private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0";
-
+    private static final String USER_AGENT = "Apifox/1.0.0 (https://apifox.com)";
     public static String get(String address) throws IOException {
         URL url = new URL(address);
         HttpURLConnection conn = createConnection(url, HTTP_GET);

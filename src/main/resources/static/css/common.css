@@ -1,48 +1,150 @@
+/* 移除默认列表样式和内外边距 */
 ul {
     list-style: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    /*display: flex; !* 使用 flex 布局水平排列 *!*/
+    /*justify-content: flex-start; !* 从左到右排列 *!*/
+    align-items: center; /* 垂直居中 */
     background-color: white;
-    border-bottom: black 1px solid;
-}
-li {
-    margin-bottom: 0;
+    border-bottom: 1px solid black;
+    position: relative; /* 固定位置 */
+    top: 0;
+    width: 100%; /* 占据全屏宽度 */
+    z-index: 1000; /* 确保它位于其他元素之上 */
 }
 
+/* li 元素的默认样式 */
+li {
+    margin: 0;
+    padding: 0;
+}
+
+/* 父级 header 的样式 */
 div.header {
     margin-bottom: 20px;
 }
 
+/* 左侧图标的样式 */
 li.left {
     float: left;
-    margin-bottom: 0;
     margin-left: 50px;
 }
 
+/* 右侧元素的样式 */
 li.right {
+    /*靠右*/
+    margin-top: 15px;
     float: right;
-    margin-bottom: 0;
-/*    与ul下边界dummy元素的距离保持一致 */
-    margin-top: 10px;
+    margin-right: 10px; /* 将 right 类元素推到容器的最右侧 */
+    margin-left: 10px;
 }
 
+/* 右侧链接的样式 */
+li.right a {
+    margin: 0 5px; /* 调整链接之间的水平间隔 */
+    padding: 10px 14px; /* 调整内边距，确保可点击区域合适 */
+}
+
+/* 图标样式 */
 li img {
     width: 95px;
     height: 60px;
     opacity: 0.9;
 }
 
-
+/* 链接样式 */
 li a {
     display: block;
     color: black;
     text-align: center;
-    padding: 14px 16px;
     text-decoration: none;
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
+/* 悬停时的动画效果 */
 li a:hover {
     transform: scale(1.1);
     color: #777777;
+}
+
+/* 清除浮动以防止高度塌陷 */
+ul:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.black_overlay {
+    display: none;
+    /* 此元素不会被显示*/
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: #bbbbbb;
+    z-index: 1001;
+    /* z-index 属性设置元素的堆叠顺序。*/
+    opacity: .80;
+    /* opacity 属性设置元素的不透明级别。*/
+}
+
+.white_content {
+    display: none;
+    position: absolute;
+    top: 20%;
+    border: 1px solid #bbbbbb;
+    border-radius: 20px;
+    background-color: white;
+    z-index: 1002;
+    /*层级要比.black_overlay高，这样才能显示在它前面*/
+    overflow: auto;
+}
+
+#light {
+    position: absolute;
+    left: 50%;
+    /* top: 50%; */
+    width: 300px;
+    height: 250px;
+    margin-left: -150px;
+    /* margin-top: -125px */;
+}
+.button_beautiful {
+    width: 60px;
+    height: 34px;
+    /* 高度 */
+    border-width: 0px;
+    border-radius: 6px;
+    background: #4ECDC4;
+    cursor: pointer;
+    outline: none;
+    color: white;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+/* 表单容器样式 */
+#form_submit {
+    display: grid;
+    grid-template-columns: 100px 1fr; /* 第一列固定宽度，第二列自适应 */
+    gap: 10px 20px; /* 行列之间的间距 */
+    align-items: center; /* 输入框与标签垂直居中 */
+    justify-content: center; /* 水平居中表单 */
+    margin-top: 5px;
+    padding: 20px;
+}
+
+/*!* 输入框样式 *!*/
+/*input[type="text"] {*/
+/*    width: ; !* 输入框占据剩余空间 *!*/
+/*    box-sizing: border-box; !* 包含内边距和边框在内的宽度计算 *!*/
+/*}*/
+
+/* 按钮样式 */
+.button_beautiful {
+    margin-top: 20px;
+    padding: 0;
+    display: flex;
 }

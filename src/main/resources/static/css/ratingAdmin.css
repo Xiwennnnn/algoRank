@@ -1,0 +1,149 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: cursive, serif, sans-serif;
+}
+
+#nameInput, #gradeSelect, #majorSelect {
+    font-family: cursive, serif, sans-serif;
+}
+
+#nameInput {
+    width: 100px;
+}
+
+div.outerBox {
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%; /* 让内容框适应页面宽度 */
+}
+
+div.selectorBox {
+    display: flex;
+    /*margin-bottom: 20px;*/
+    /*gap: 20px; !* 增加选择框之间的间距 *!*/
+}
+
+div.selectorBox div {
+    margin-right: 40px;
+}
+
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* 偶数行背景色 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #ffffff; /* 奇数行背景色 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+
+#currentPage {
+    width: 40px;
+}
+
+table {
+    width: 100%;
+    border: 2px #090909 solid;
+    margin: 20px auto; /* 增加表格的上外边距 */
+    text-align: center;
+    border-collapse: collapse;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 表格阴影效果 */
+}
+
+th, td {
+    border: 1px #090909 solid;
+    padding: 10px; /* 增加单元格的内边距 */
+}
+
+th.Num, td.Num {
+    width: 5%;
+}
+
+th.RealName, td.RealName {
+    width: 15%;
+}
+
+th.CfUsername, td.CfUsername {
+    width: 20%;
+}
+
+th.LcUsername, td.LcUsername {
+    width: 20%;
+}
+
+th.Grade, td.Grade {
+    width: 10%;
+}
+
+th.Major, td.Major {
+    width: 20%;
+}
+
+th.ChangeBtn, td.ChangeBtn {
+    width: 5%;
+}
+
+th.DeleteBtn, td.DeleteBtn {
+    width: 5%;
+}
+
+img.pageicon {
+    width: 20px;
+    height: 20px;
+    border: none; /* 修正拼写错误 */
+}
+
+div.pagination {
+    display: flex;
+    justify-content: center; /* 居中对齐 */
+    align-items: center;
+    gap: 10px; /* 增加按钮之间的间距 */
+    padding: 10px 0; /* 增加上下内边距 */
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden; /* 确保圆角效果生效 */
+    width: auto; /* 自适应宽度 */
+    margin-left: auto;
+    margin-right: auto; /* 确保分页栏水平居中 */
+}
+
+div button {
+    color: black; /* 将按钮字体颜色设置为黑色 */
+    padding: 6px 10px; /* 缩小按钮的内边距 */
+    font-size: 14px; /* 减小按钮的字体大小 */
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #090909; /* 增加边框 */
+    border-radius: 5px; /* 添加圆角效果 */
+    background-color: white; /* 按钮背景设置为白色 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
+}
+
+div button:hover {
+    background-color: #f0f0f0; /* 鼠标悬停效果 */
+}
+
+div button input {
+    width: 40px;
+    text-align: center;
+    border: none;
+    background: none;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.page-input {
+    font-family: cursive, serif, sans-serif;
+    font-size: 16px;
+    text-align: center;
+    width: 40px;
+    background-color: transparent;
+    border: none;
+    color: black; /* 设置输入框字体为黑色 */
+    margin-left: 5px; /* 增加输入框的左边距 */
+}

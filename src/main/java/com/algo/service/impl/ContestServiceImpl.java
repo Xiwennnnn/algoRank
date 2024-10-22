@@ -50,10 +50,19 @@ public class ContestServiceImpl implements ContestService {
         List<ContestDo> contestDos = contests.stream().map(ContestDto::toDo).toList();
         mapper.insertOrUpdate(contestDos, (sqlSession, contest) -> {
             // 根据link字段判断是否存在相同的比赛
-            return sqlSession.selectList("com.algo.data.mapper.ContestMapper.selectByLink", contest.getLink()).isEmpty();
+            List<ContestDo> existingContests = sqlSession.selectList("com.algo.data.mapper.ContestMapper.selectByLink", contest.getLink());
 
+            if (!existingContests.isEmpty()) {
+                // 如果存在，返回false表示需要更新
+                mapper.update(contest, Wrappers.<ContestDo>lambdaQuery().eq(ContestDo::getLink, contest.getLink()));
+                return false;
+            } else {
+                // 如果不存在，返回true表示需要插入
+                return true;
+            }
         });
     }
+
 
     @Override
     public Integer deleteOverlapContests() {

@@ -1,16 +1,29 @@
-<html lang="zh-Hans" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="user-menu" class="user-menu">
     <div class="dropdown">
-        <span class="username" th:text="${#authentication.principal.username}">用户</span>
-        <div class="dropdown-content">
-            <a href="/profile"></a>
-            <a href="/settings">设置</a>
-            <a href="/logout">退出</a>
-        </div>
+        <img class="user-table" th:src="@{/icon/table.png}" alt="用户表">
+
+        <th:block th:if="${#authentication.getPrincipal() == 'anonymousUser'}">
+            <div class="dropdown-content">
+                <a href="/login">管理员登录</a>
+            </div>
+        </th:block>
+
+        <th:block th:if="${#authentication.getPrincipal() != 'anonymousUser'}">
+            <div class="dropdown-content">
+                <a href="/ratingAdmin">Rating管理</a>
+                <a href="/logout">注销</a>
+            </div>
+        </th:block>
     </div>
 
     <style>
+        .user-table {
+            width: 30px;
+            height: 30px;
+            cursor: pointer; /* 鼠标悬停时的手型指针 */
+        }
+
         .dropdown {
             position: relative;
             display: inline-block;
@@ -21,27 +34,27 @@
             position: absolute;
             background-color: #f9f9f9;
             min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             z-index: 1;
+            right: 0; /* 设置右侧对齐 */
         }
 
         .dropdown-content a {
-            color: black;
+            color: #333;
             padding: 12px 16px;
             text-decoration: none;
             display: block;
+            transition: background-color 0.3s;
         }
 
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
 
+        /* 修改这里以确保下拉框在鼠标悬停时保持可见 */
         .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .dropdown:hover .username {
-            background-color: #3e8e41;
+            display: block; /* 当鼠标悬停在.dropdown上时显示内容 */
         }
     </style>
 </div>
+</html>
