@@ -11,4 +11,8 @@ public class CfRatingQuery {
     private String name;
     private String grade;
     private String major;
+
+    public static CfRatingQuery empty() {
+        return new CfRatingQuery();
+    }
 }

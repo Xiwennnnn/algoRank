@@ -8,6 +8,7 @@ import java.util.Date;
 
 @Data
 public class ContestDto extends BaseDto implements Comparable<ContestDto> {
+    private Long id;
     private String oj;
     private String name;
     private Date startTime;
@@ -17,12 +18,13 @@ public class ContestDto extends BaseDto implements Comparable<ContestDto> {
     private String status;
     private boolean oiContest;
     private String link;
+    private boolean isNotify;
 
     public ContestDto(String oj, String name, Date startTime, Date endTime, String status, String link) {
-        this(oj, name, startTime, endTime, status, false, link);
+        this(oj, name, startTime, endTime, status, false, link, false);
     }
 
-    public ContestDto(String oj, String name, Date startTime, Date endTime, String status, boolean oiContest, String link) {
+    public ContestDto(String oj, String name, Date startTime, Date endTime, String status, boolean oiContest, String link, boolean isNotify) {
         this.oj = oj;
         this.name = name;
         this.startTime = startTime;
@@ -32,6 +34,7 @@ public class ContestDto extends BaseDto implements Comparable<ContestDto> {
         this.status = status;
         this.oiContest = oiContest;
         this.link = link;
+        this.isNotify = isNotify;
         updateStatus();
     }
 
@@ -46,6 +49,7 @@ public class ContestDto extends BaseDto implements Comparable<ContestDto> {
 
     public static ContestDo toDo(ContestDto dto) {
         ContestDo dobj = new ContestDo();
+        dobj.setId(dto.getId());
         dobj.setOj(dto.getOj());
         dobj.setName(dto.getName());
         dobj.setStartTime(dto.getStartTime());
@@ -53,11 +57,20 @@ public class ContestDto extends BaseDto implements Comparable<ContestDto> {
         dobj.setStatus(dto.getStatus());
         dobj.setOiContest(dto.isOiContest());
         dobj.setLink(dto.getLink());
+        dobj.setNotify(dto.isNotify());
         return dobj;
     }
 
     public static ContestDto fromDo(ContestDo dobj) {
-        ContestDto dto = new ContestDto(dobj.getOj(), dobj.getName(), dobj.getStartTime(), dobj.getEndTime(), dobj.getStatus(), dobj.isOiContest(), dobj.getLink());
+        ContestDto dto = new ContestDto(dobj.getOj()
+                , dobj.getName()
+                , dobj.getStartTime()
+                , dobj.getEndTime()
+                , dobj.getStatus()
+                , dobj.isOiContest()
+                , dobj.getLink()
+                , dobj.isNotify());
+        dto.setId(dobj.getId());
         return dto;
     }
 

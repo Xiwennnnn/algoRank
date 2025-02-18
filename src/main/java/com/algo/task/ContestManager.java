@@ -7,6 +7,8 @@ import com.algo.data.dto.ContestDto;
 import com.algo.service.ContestService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -59,7 +61,7 @@ public class ContestManager {
     }
 
     @Async
-    @Scheduled(fixedDelay = 30 * 60 * 1000)
+    @Scheduled(fixedDelay = 5 * 60 * 1000)
     public void crawlTask() {
         StopWatch stopWatch = new StopWatch("ContestManager");
 
@@ -92,7 +94,6 @@ public class ContestManager {
     @Async
     @Scheduled(fixedDelay = 60 * 1000)
     public void updateStatusTask() {
-        contestService.deleteOverlapContests();
         contestService.updateStatus();
     }
 

@@ -6,8 +6,11 @@ import java.util.List;
 public enum GradeEnum {
 
     全部("全部"),
+    _24级("24"),
+    _23级("23"),
     _22级("22"),
-    _23级("23");
+    _21级("21"),
+    _20级("20");
 
     public final String grade;
     GradeEnum(String grade) {

@@ -11,7 +11,8 @@
 
         <th:block th:if="${#authentication.getPrincipal() != 'anonymousUser'}">
             <div class="dropdown-content">
-                <a href="/ratingAdmin">Rating管理</a>
+                <a href="/admin/ratingAdmin">Rating管理</a>
+                <a href="/admin/contestAdmin">比赛管理</a>
                 <a href="/logout">注销</a>
             </div>
         </th:block>

@@ -1,6 +1,8 @@
 package com.algo.crawler.contest;
 import com.algo.data.common.ContestStatus;
 import com.algo.data.dto.ContestDto;
+import com.algo.exception.ContestCrawlerWrtongException;
+import com.algo.exception.HttpRequestWrongException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -14,20 +16,17 @@ public class CodeforcesCrawler extends ContestBaseCrawler {
     private static final String URL = "https://codeforces.com/api/contest.list?gym=false";
 
     @Override
-    public List<ContestDto> crawl() throws IOException {
+    public List<ContestDto> crawl() throws ContestCrawlerWrtongException {
         List<ContestDto> contestList = new ArrayList<>();
         JsonNode jsonNode = null;
         try {
             jsonNode = parseContestJson(get(URL));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to crawl Codeforces contests");
+        } catch (HttpRequestWrongException e) {
+            throw new ContestCrawlerWrtongException(e.getMessage());
         }
-        //遍历jsonNode
         Iterator<JsonNode> elements = jsonNode.elements();
         while (elements.hasNext()) {
             ContestDto contestInfo = parseContest(elements.next());
-            //如果比赛已经结束了，则不添加到列表中，并break
             if (contestInfo.getEndTime().before(new Date())) {
                 break;
             }
@@ -37,13 +36,12 @@ public class CodeforcesCrawler extends ContestBaseCrawler {
         return contestList;
     }
 
-    private JsonNode parseContestJson(String jsonStr) {
+    private JsonNode parseContestJson(String jsonStr) throws ContestCrawlerWrtongException {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readTree(jsonStr).get("result");
         } catch (Exception e) {
-            e.printStackTrace();
-            return JsonNodeFactory.instance.arrayNode();
+            throw new ContestCrawlerWrtongException("Codeforces 比赛数据Json解析失败");
         }
     }
 

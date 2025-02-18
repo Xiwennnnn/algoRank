@@ -15,6 +15,8 @@ import java.util.Locale;
 @Slf4j
 public class ContestLink {
     protected static final String A_LINK_STYLE = " style='cursor: pointer;position: relative;text-decoration: none;color: #000000;' ";
+//  解决SDF线程安全问题
+    private static final ThreadLocal<SimpleDateFormat> sdfThreadLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy年M月d日 HH:mm", Locale.CHINESE));
 
     public static ContestVo convert(ContestDto dto) {
         ContestVo vo = new ContestVo();
@@ -27,7 +29,7 @@ public class ContestLink {
         String duration = String.format("%02d:%02d", hours, minutes);
         vo.setDuration(duration);
         Date startDate = dto.getStartTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("M月d日 HH:mm", Locale.CHINESE);
+        SimpleDateFormat sdf = sdfThreadLocal.get();
         vo.setStartTime(sdf.format(startDate));
         vo.setStatus(dto.getStatus());
         Long todayendTime = DateUtil.endOfDay(new Date()).getTime();

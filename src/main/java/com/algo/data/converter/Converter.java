@@ -3,8 +3,8 @@ package com.algo.data.converter;
 import com.algo.data.dao.AlgoUserDo;
 import com.algo.data.dao.CfRatingDo;
 import com.algo.data.dao.LcRatingDo;
-import com.algo.data.dto.CfRatingDto;
-import com.algo.data.dto.LcRatingDto;
+import com.algo.data.dto.codeforces.CfRatingDto;
+import com.algo.data.dto.leetcode.LcRatingDto;
 import com.algo.data.vo.CfRatingVo;
 import com.algo.data.vo.LcRatingVo;
 

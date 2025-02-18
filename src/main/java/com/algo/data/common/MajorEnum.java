@@ -10,7 +10,8 @@ public enum MajorEnum {
     Big_Data("大数据"),
     Artificial_Intelligence("人工智能"),
     Information_Computational_Science("信息与计算科学"),
-    Computer_Common("计算机大类");
+    Computer_Common("计算机大类"),
+    Other("其他");
 
 
     public final String Name;

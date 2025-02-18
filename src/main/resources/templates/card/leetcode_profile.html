@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="zh-Hans">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=2.0" />
+    <link rel="stylesheet" href="http://localhost/css/bootstrap.min.css" />
+    <title>Document</title>
+    <style>
+        body {
+            font-family: "思源黑体 CN", Tahoma, Verdana, STHeiTi, simsun, sans-serif;
+        }
+        .background-color {
+            background-image: radial-gradient(circle at top right,
+            #cb7000 0%,
+            #ffb054);
+        }
+
+
+        .codeforceLogoDiv div {
+            position: absolute;
+            bottom: 0px;
+            width: 4px;
+        }
+
+        .font-sz-12 {
+            font-size: 12px;
+        }
+
+        .font-sz-32 {
+            font-size: 32px;
+        }
+
+        .font-sz-16 {
+            font-size: 16px;
+        }
+
+        .font-weight-300 {
+            font-weight: 300;
+        }
+
+        .font-weight-500 {
+            font-weight: 500;
+        }
+
+        .font-weight-800 {
+            font-weight: 800;
+        }
+    </style>
+</head>
+
+<!--/*@thymesVar id="UserInfo" type="com.algo.data.dto.leetcode.LcRatingDto"*/-->
+<body>
+<!--/*@thymesVar id="Count" type="java.lang.Integer"*/-->
+<div class="background-color position-absolute" style="width: 400px; height: 225px">
+    <!-- CodeForces Logo -->
+    <h4 class="d-flex position-absolute" style="
+          font-weight: 800;
+          font-size: 16px;
+          height: 16px;
+          top: 16px;
+          left: 16px;
+        ">
+        <div class="d-flex codeforceLogoDiv" style="height:20px; width: 20px; position: relative">
+            <img src="http://localhost/icon/LcIcon.png" width="20px" height="20px" style="position: absolute; top: 0; left: 0" />
+        </div>
+        <span>Leet</span><span style="color: #1a678b">Code</span>
+    </h4>
+    <!-- 排名 -->
+    <div class="position-absolute text-white" style="font-weight: 600; top: 8px; right: 16px; text-align: right">
+        <p style="height: 8px">Personal Profile</p>
+        <p style="height: 8px">个人信息</p>
+    </div>
+    <th:block th:if="${UserInfo.grading == 'Knight'}">
+        <img src="http://localhost/images/Knight.png" width="40px" height="40px" style="position: absolute; top: 70px; right: 16px" />
+    </th:block>
+    <th:block th:if="${UserInfo.grading == 'Guardian'}">
+        <img src="http://localhost/images/Guardian.png" width="40px" height="40px" style="position: absolute; top: 70px; right: 16px" />
+    </th:block>
+
+    <!-- user logo -->
+    <img class="position-absolute" th:src="${UserInfo.avatarUrl}" width="64px" height="64px" style="top: 64px; left: 16px; background-size: cover; background-position: center; background-repeat: no-repeat">
+
+    <!-- username -->
+    <div class="position-absolute" style="top: 64px; left: 96px; height: 64px">
+        <p class="text-white font-sz-12 font-weight-300" style="height: 0px" th:text="${UserInfo.userName}">
+            USERNAME
+        </p>
+        <p class="text-white font-sz-32 font-weight-500" th:text="${UserInfo.realName}">Handle</p>
+    </div>
+
+    <!-- rank -->
+    <div class="position-absolute" style="bottom: 8px; left: 16px">
+        <p class="text-white font-sz-16 font-weight-300" style="height: 0px">
+            Solved
+        </p>
+        <p class="text-white font-sz-32 font-weight-500" style="height: 32px" th:text="${Count}">
+            Solved
+        </p>
+    </div>
+
+    <!-- Rating -->
+    <div class="position-absolute" style="bottom: 16px; right: 16px; text-align: right">
+        <p class="text-white font-weight-500 font-sz-16" style="height: 0; margin-bottom: 8px">
+            Contest Rating
+        </p>
+        <p class="text-white font-weight-800" style="font-size: 64px; height: 64px" th:text="${UserInfo.rating}">
+            Rating
+        </p>
+    </div>
+</div>
+</body>
+
+</html>

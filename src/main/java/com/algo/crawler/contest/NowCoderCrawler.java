@@ -2,13 +2,14 @@ package com.algo.crawler.contest;
 
 import com.algo.data.common.ContestStatus;
 import com.algo.data.dto.ContestDto;
+import com.algo.exception.ContestCrawlerWrtongException;
+import com.algo.exception.HttpRequestWrongException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,36 +20,30 @@ public class NowCoderCrawler extends ContestBaseCrawler {
     private static final String OI_URL = "https://ac.nowcoder.com/acm/contest/vip-index?rankTypeFilter=2";
 
     @Override
-    public List<ContestDto> crawl() throws IOException {
+    public List<ContestDto> crawl() throws ContestCrawlerWrtongException {
         List<ContestDto> contestList = null;
         List<ContestDto> oiList = null;
-        try {
-            contestList = crawl(ACM_URL);
-            oiList = crawl(OI_URL);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to crawl NowCoder contests", e);
-        }
+        contestList = crawl(ACM_URL);
+        oiList = crawl(OI_URL);
         for (ContestDto contest : oiList) {
             contest.setOiContest(true);
         }
         contestList.addAll(oiList);
-
         return contestList;
     }
 
-    private List<ContestDto> crawl(String url) throws IOException {
+    private List<ContestDto> crawl(String url) throws ContestCrawlerWrtongException {
         List<ContestDto> contestList = new ArrayList<>();
         Document doc = null;
         try {
             doc = Jsoup.parse(get(url));
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to crawl NowCoder contests", e);
+        } catch (HttpRequestWrongException e) {
+            throw new ContestCrawlerWrtongException(e.getMessage());
         }
         Elements contests = doc.select("div.platform-item-cont");
         for (Element contest : contests) {
             contestList.add(parseContest(contest));
         }
-
         return contestList;
     }
 

@@ -1,10 +1,12 @@
 package com.algo.config;
 
+import com.algo.filter.JwtAuthenticationTokenFilter;
 import com.algo.handler.UserAuthenticationSuccessHandler;
 import com.algo.util.CustomMd5PasswordEncoder;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +15,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -30,6 +34,9 @@ public class SecurityConfig {
 
     @Resource
     private UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
+    @Resource
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+
     /**
      * 自定义密码加密器
      * @return
@@ -67,16 +74,18 @@ public class SecurityConfig {
                 .and()
                 // 哪些路径不需要登录就可以访问
                 .authorizeHttpRequests()
-//                    .requestMatchers("/api/**").permitAll()
-//                    .requestMatchers("/page/**").permitAll()
-//                    .requestMatchers("/", "/cfrank", "/lcrank", "/calendar").permitAll()
-//                    // 静态资源不需要登录就可以访问
-//                    .requestMatchers("/static/**", "/webjars/**", "/css/**", "/js/**", "/images/**", "/icon/**").permitAll()
-//                    // 其他路径需要登录才能访问
-//                    .anyRequest().authenticated()
-                .anyRequest().permitAll()
+                    .requestMatchers("/api/**").permitAll()
+                    .requestMatchers("/page/**").permitAll()
+//                    .requestMatchers("/login").permitAll()
+                    .requestMatchers("/", "/cfrank", "/lcrank", "/calendar", "/global").permitAll()
+                    .requestMatchers("/ws/shiro/**").permitAll()
+                    // 静态资源不需要登录就可以访问
+                    .requestMatchers("/static/**", "/webjars/**", "/css/**", "/js/**", "/images/**", "/icon/**").permitAll()
+                    // 其他路径需要已经登录才能访问
+                    .anyRequest().authenticated()
                 .and()
-                // 配置登录页面
+                .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .and()
                 .formLogin()
                     .loginPage("/login")
                     .loginProcessingUrl("/api/user/login")
@@ -84,10 +93,10 @@ public class SecurityConfig {
 //                  重定向到登录页面，如果登录失败
                     .failureUrl("/login?error=true")
                 .and()
-                // 设置跨域请求的相关配置
                 .cors()
                     .configurationSource(corsConfigurationSource())
                 .and()
+                .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

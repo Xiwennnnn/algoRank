@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <title>ECharts</title>
+    <script src="http://localhost/js/echarts.min.js"></script>
+    <script src="http://localhost/js/infographic.js"></script>
+    <!--/*@thymesVar id="UserInfo" type="com.algo.data.dto.leetcode.LcRatingDto"*/-->
+    <style th:inline="css">
+        body {
+            font-family: "思源黑体 CN", Tahoma, Verdana, STHeiTi, simsun, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '© whpu算法协会';
+            position: absolute;
+            top: 450px;
+            left: 0;
+            width: 500px;
+            text-align: center;
+            font-size: 30px;
+            color: rgba(0, 0, 0, 0.2);
+            transform: rotate(-20deg);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        #info div {
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<!--/*@thymesVar id="UserInfo" type="com.algo.data.dto.leetcode.LcRatingDto"*/-->
+<div id="info" style="margin-left:80px; margin-top:50px; width: 1000px;height: 100px;display: flex;">
+    <img th:src="${UserInfo.avatarUrl}" src="https://assets.leetcode.cn/aliyun-lc-upload/users/xi-wen-k9/avatar_1660174460.png" width="100px" height="100px" alt="头像" style="margin-right: 5px">
+    <div id="profile" style="width: auto;height: 100px;display: flex;flex-direction: column;align-items: start">
+        <span id="realName" style="font-size:30px" th:text="${UserInfo.realName}">用户昵称</span><br>
+        <span style="font-size: 15px;color: #777777" th:text="${UserInfo.userName}">用户名</span>
+    </div>
+    <script>
+        window.addEventListener('load', function() {
+            var realName = document.getElementById('realName');
+            var maxWidth = 120;
+            function adjustFontSize() {
+                var fontSize = 30;  // 初始字体大小
+                realName.style.fontSize = fontSize + 'px';
+
+                // 检查昵称宽度，如果超过最大宽度，则减少字体大小
+                while (realName.offsetWidth > maxWidth && fontSize > 10) {
+                    fontSize -= 2;
+                    realName.style.fontSize = fontSize + 'px';
+                }
+            }
+
+            adjustFontSize();  // 初始调整
+
+            // 如果需要响应式调整，可以监听窗口大小变化
+            window.addEventListener('resize', adjustFontSize);
+        });
+    </script>
+    <div id="ratingData" style="width: 150px;height: 100px;margin-left: 30px">
+        <label style="font-size: 20px;color: #333333">竞赛分数</label><br>
+        <span style="font-size: 40px" th:text="${UserInfo.rating}">9999</span>
+    </div>
+    <th:block th:if="${UserInfo.grading} == 'Knight'">
+        <img src="http://localhost/images/Knight.png" style="width: 70px;height: 70px;" alt="`Knight`">
+        <div id="KnightLevel" style="width: 140px;height: 100px;">
+            <label style="font-size: 20px;color: #333333">当前段位</label><br>
+            <span style="font-size:20px;color: blue">Knight</span>
+        </div>
+    </th:block>
+    <th:block th:if="${UserInfo.grading} == 'Guardian'">
+        <img src="http://localhost/images/Guardian.png" style="width: 70px;height: 70px;" alt="`Guardian`">
+        <div id="GuardianLevel" style="width: 140px;height: 100px;">
+            <label style="font-size: 20px;color: #333333">当前段位</label><br>
+            <span style="font-size:20px;color: blue">Guardian</span>
+        </div>
+    </th:block>
+    <div id="GlobalRank" style="width: 120px;height: 100px;">
+        <label style="font-size: 20px;color: #333333">全球排名</label><br>
+        <span style="font-size: 20px" th:text="${UserInfo.globalRank}">9999</span>/<span style="color: #777777;font-size: 15px" th:text="${UserInfo.globalTotalParticipants}">9999</span>
+    </div>
+    <div id="LocalRank" style="width: 120px;height: 200px;margin-left: 10px">
+        <label style="font-size: 20px;color: #333333">全国排名</label><br>
+        <span style="font-size: 20px" th:text="${UserInfo.nationRank}">9999</span>/<span style="color: #777777;font-size: 15px" th:text="${UserInfo.localTotalParticipants}">9999</span>
+    </div>
+</div>
+
+<div id="otherInfo" style="width: 1000px;height: 200px;display: flex">
+    <div id="ProblemSolved" style="width: 350px;height: 150px;margin-left: 100px;margin-top: 60px"></div>
+    <div id="LanguageData" style="width: 400px;height: 200px;margin-left: 10px;"></div>
+</div>
+<div id="main" style="width: 1000px;height:300px;"></div>
+<script th:inline="javascript">
+
+    function convertToReadableDate(seconds) {
+        const date = new Date(seconds * 1000);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        renderProblemSolved();
+        renderLanguageData(/*[[${LANGUAGE_DATA}]]*/)
+        renderContent(/*[[${RatingChangesMetaData}]]*/);
+    });
+
+    function renderLanguageData(data) {
+        var chartDom = document.getElementById('LanguageData');
+        var myChart = echarts.init(chartDom);
+        var option;
+        var language_data = Object.keys(data);
+        var language_count = Object.values(data);
+        option = {
+            animation: false,
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            yAxis: {
+                type: 'category',
+                data: language_data
+            },
+            series: [
+                {
+                    name: '2011',
+                    type: 'bar',
+                    data: language_count
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+    }
+
+    function renderProblemSolved() {
+        var chartDom = document.getElementById('ProblemSolved');
+        var myChart = echarts.init(chartDom);
+        var option;
+
+        option = {
+            animation: false,
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                top: 'center',
+                left: 'left',
+                orient: 'vertical'
+            },
+            series: [
+                {
+                    name: 'Access From',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        fontSize: 20,
+                        formatter: '{c}'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left'
+                    },
+                    color: ['#55c08f', '#ffda00', '#e60000'],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    },
+                    labelLine: {
+                        show: true
+                    },
+                    data: [
+                        { value: [[${SOLVED_EASY}]], name: '简单题' },
+                        { value: [[${SOLVED_MEDIUM}]], name: '中等题' },
+                        { value: [[${SOLVED_HARD}]], name: '困难题' }
+                    ]
+                }
+            ]
+        };
+
+        option && myChart.setOption(option);
+    }
+
+    function renderContent(data) {
+        const rating_change_data = data.map(item => {
+            const readableDate = convertToReadableDate(item.finishTimeInSeconds);
+            return [readableDate, item.rating];
+        });
+
+        const max_rating = Math.max(...rating_change_data.map(item => item[1]));
+        const last_rating_change = rating_change_data[rating_change_data.length - 1][0]
+        const view_rating = max_rating
+        let flag = true;
+
+        const chartDom = document.getElementById('main');
+        const myChart = echarts.init(chartDom, "infographic");
+
+        const today = new Date()
+        const today_str = today.getFullYear() + '-' +
+            String(today.getMonth() + 1).padStart(2, '0') + '-' +
+            String(today.getDate()).padStart(2, '0')
+
+        option = {
+            animation: false,
+            xAxis: {
+                type: 'time',
+                axisLabel: {
+                    formatter: function (value) {
+                        const date = new Date(value);
+                        const year = date.getFullYear();
+                        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                        const day = date.getDate().toString().padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    },
+                    rotate: 45,
+                },
+                min: function (value) {
+                    return new Date(value.min - (value.max - value.min) * 0.05);
+                },
+                max: function (value) {
+                    return new Date(value.max + (value.max - value.min) * 0.05);
+                },
+            },
+            yAxis: {
+                type: 'value',
+                axisTick: {
+                    show: false
+                },
+                min: function (value) {
+                    return value.min - 100;
+                },
+                max: function (value) {
+                    return value.max + 100;
+                },
+                axisLabel: {
+                    show: false
+                },
+                splitLine: {
+                    show: false
+                }
+            },
+
+            series: [{
+                data: rating_change_data,
+                type: 'line',
+                smooth: false,
+                label: {
+                    show: true,
+                    position: 'top',
+                    formatter: function (params) {
+                        if ((params.data[1] >= view_rating && flag) || params.data[0] === last_rating_change) {
+                            flag = false;
+                            return params.data[1]
+                        }
+                        return ""
+                    }
+                }
+            }]
+        };
+        option && myChart.setOption(option);
+    }
+</script>
+</body>
+</html>

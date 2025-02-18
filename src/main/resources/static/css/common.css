@@ -1,3 +1,6 @@
+body {
+    font-family: cursive, serif, sans-serif;
+}
 /* 移除默认列表样式和内外边距 */
 ul {
     list-style: none;
@@ -21,7 +24,7 @@ li {
 }
 
 /* 父级 header 的样式 */
-div.header {
+div.my-header {
     margin-bottom: 20px;
 }
 

@@ -11,7 +11,7 @@
 </head>
 <body>
 <!--导入导航栏-->
-<div th:replace="/fragments/header.html"></div>
+<div th:replace="~{fragments/header.html}"></div>
 <div class="outerBox SelectBox">
     <div class="TypeBox">
         <label>比赛类型:</label>
@@ -22,7 +22,14 @@
             <option value="All">全部</option>
         </select>
     </div>
+    <div class = "isOverBox">
+        <select id="isOverSelect" onchange="changeContestType()">
+            <option value="notOver">未结束</option>
+            <option value="isOver">已结束</option>
+        </select>
+    </div>
     <div class="PlatformBox">
+        <input type="checkbox" onchange="changeContestType()" id="othersCheckbox" checked> <img class="platformIcon" th:src="@{/icon/others.png}" alt="其他"/>
         <input type="checkbox" onchange="changeContestType()" id="leetcodeCheckbox" checked> <img class="platformIcon" th:src="@{/icon/LcIcon.png}" alt="LeetCode"/>
         <input type="checkbox" onchange="changeContestType()" id="codeforcesCheckbox" checked> <img class="platformIcon" th:src="@{/icon/CfIcon.png}" alt="Codeforces"/>
         <input type="checkbox" onchange="changeContestType()" id="nowcoderCheckbox" checked> <img class="platformIcon" th:src="@{/icon/NcIcon.ico}" alt="牛客"/>
@@ -42,17 +49,20 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="contest, iterStat : ${contests}" th:class="${contest.status} + ' ' + ${contest.isToday ? 'today' : 'notoday'}">
-            <td th:utext="${iterStat.index + 1}"></td>
-            <td class="hoverTd" th:utext="${contest.oj}"></td>
-            <td class="hoverTd" th:utext="${contest.name}"></td>
-            <td th:utext="${contest.startTime}"></td>
-            <td th:utext="${contest.duration}"></td>
-            <td th:utext="${contest.status}"></td>
-        </tr>
         </tbody>
     </table>
 </div>
+<div class="pagination outerBox">
+    <button onclick="firstPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/lleft.png}"/></button>
+    <button onclick="previousPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/left.png}"/></button>
+    第<input id="currentPage" type="text" value="1" onchange="gotoPage()" oninput="validateInput(this)" class="page-input"/>页
+    &nbsp;&nbsp;/&nbsp;&nbsp;共&nbsp;<span id="totalPage">1</span>&nbsp;页
+    <button onclick="nextPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/right.png}"/></button>
+    <button onclick="lastPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/rright.png}"/></button>
+</div>
+
+
+<!--核心特效定义js-->
 </body>
 
 </html>

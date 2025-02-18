@@ -2,6 +2,8 @@ package com.algo.crawler.contest;
 
 import com.algo.data.common.ContestStatus;
 import com.algo.data.dto.ContestDto;
+import com.algo.exception.ContestCrawlerWrtongException;
+import com.algo.exception.HttpRequestWrongException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -31,15 +33,14 @@ public class LeetCodeCrawler extends ContestBaseCrawler {
     }
 
     @Override
-    public List<ContestDto> crawl() throws IOException {
-        Document doc = Jsoup.parse(post(URL, REQUEST_BODY, headers));
-        List<ContestDto> contestList = new ArrayList<>();
-        // 请求数据
+    public List<ContestDto> crawl() throws ContestCrawlerWrtongException {
         JsonNode contests = null;
+        List<ContestDto> contestList = null;
         try {
+            contestList = new ArrayList<>();
             contests = getContestsJson(post(URL, REQUEST_BODY, headers));
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to get LeetCode contests", ex);
+        } catch (HttpRequestWrongException ex) {
+            throw new ContestCrawlerWrtongException("获取Leetcode比赛信息失败" + ex.getMessage());
         }
         Date now = new Date();
         for (JsonNode contest : contests) {
@@ -53,13 +54,12 @@ public class LeetCodeCrawler extends ContestBaseCrawler {
         return contestList;
     }
 
-    private JsonNode getContestsJson(String data) {
+    private JsonNode getContestsJson(String data) throws ContestCrawlerWrtongException {
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(data).get("data").get("contestUpcomingContests");
         } catch (IOException ex) {
-            ex.printStackTrace();
-            return JsonNodeFactory.instance.arrayNode();
+            throw new ContestCrawlerWrtongException("解析Leetcode比赛信息失败Json数据异常");
         }
     }
 
@@ -74,6 +74,6 @@ public class LeetCodeCrawler extends ContestBaseCrawler {
         String status = ContestStatus.REGISTER;
         String link = "https://leetcode.cn/contest/" + nameSulg;
 
-        return new ContestDto("LeetCode", name, startTime, endTime, status, false, link);
+        return new ContestDto("LeetCode", name, startTime, endTime, status, false, link, false);
     }
 }

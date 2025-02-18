@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -66,9 +69,13 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             response.sendRedirect("/");
             return;
         }
-        UserDto user = new UserDto(userVo, Collections.emptyList());
+        log.info(userVo.toString());
+
+        Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(userVo.getRole());
+        UserDto user = new UserDto(userVo, authorities);
+
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+                new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         filterChain.doFilter(request, response);

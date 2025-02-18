@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ContestVo {
+    private Long id;
     private String oj;
     private String name;
     private String startTime;

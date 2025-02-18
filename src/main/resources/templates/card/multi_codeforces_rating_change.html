@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <title>ECharts</title>
+    <script src="http://localhost/js/echarts.min.js"></script>
+    <script src="http://localhost/js/infographic.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '© whpu算法协会';
+            position: absolute;
+            left: 0;
+            top: 250px;
+            width: 500px;
+            text-align: center;
+            font-size: 16px;
+            color: rgba(0, 0, 0, 0.2);
+            transform: rotate(-20deg);
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+<div id="main" style="width: 1000px;height:500px;"></div>
+<script th:inline="javascript">
+    function convertToReadableDate(seconds) {
+        const date = new Date(seconds * 1000);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const origin_data = /*[[${MultipleRatingChangesMetaData}]]*/ [];
+
+        // 确保每个用户的数据包含他们的 handle 和 ratingChanges
+        const seriesData = origin_data.map(userData => {
+            let uname = userData[0].handle;  // 获取用户handle
+            const rating_change_data = userData.map(item => {
+                const readableDate = convertToReadableDate(item.ratingUpdateTimeSeconds);
+                return [readableDate, item.newRating];
+            });
+            return {
+                name: uname,  // 设置用户的 handle 名称
+                type: 'line',
+                smooth: false,
+                data: rating_change_data,
+                markArea: {
+                    silent: true,
+                    data: [
+                        [{ yAxis: 0 }, { yAxis: 1200, itemStyle: { color: '#b0bec5' } }],
+                        [{ yAxis: 1200 }, { yAxis: 1400, itemStyle: { color: '#76fd76' } }],
+                        [{ yAxis: 1400 }, { yAxis: 1600, itemStyle: { color: '#76dbba' } }],
+                        [{ yAxis: 1600 }, { yAxis: 1900, itemStyle: { color: '#a9a9fd' } }],
+                        [{ yAxis: 1900 }, { yAxis: 2100, itemStyle: { color: '#fd87fd' } }],
+                        [{ yAxis: 2100 }, { yAxis: 2300, itemStyle: { color: '#fdca87' } }],
+                        [{ yAxis: 2300 }, { yAxis: 2400, itemStyle: { color: '#fdba54' } }],
+                        [{ yAxis: 2400 }, { yAxis: 2600, itemStyle: { color: '#fd7676' } }],
+                        [{ yAxis: 2600 }, { yAxis: 3000, itemStyle: { color: '#fd3333' } }],
+                        [{ yAxis: 3000 }, { yAxis: 4000, itemStyle: { color: '#a90000' } }],
+                        [{ yAxis: 4000 }, { yAxis: 9999, itemStyle: { color: '#990000' } }],
+                    ]
+                },
+                markLine: {
+                    silent: true,
+                    symbol: 'none',
+                    label: {
+                        position: 'start',
+                        formatter: '{c}'
+                    },
+                    data: [
+                        { yAxis: 1200 },
+                        { yAxis: 1400 },
+                        { yAxis: 1600 },
+                        { yAxis: 1900 },
+                        { yAxis: 2100 },
+                        { yAxis: 2300 },
+                        { yAxis: 2400 },
+                        { yAxis: 2600 },
+                        { yAxis: 3000 },
+                        { yAxis: 4000 },
+                    ],
+                    lineStyle: {
+                        color: 'black',
+                        type: 'dashed'
+                    }
+                }
+            };
+        });
+
+        const chartDom = document.getElementById('main');
+        const myChart = echarts.init(chartDom, "infographic");
+
+        const today = new Date();
+        const today_str = today.getFullYear() + '-' +
+            String(today.getMonth() + 1).padStart(2, '0') + '-' +
+            String(today.getDate()).padStart(2, '0');
+
+        const option = {
+            animation: false,
+            title: {
+                text: '多用户查询',
+                subtext: today_str,
+                left: 'center',
+            },
+            xAxis: {
+                type: 'time',
+                axisLabel: {
+                    formatter: function (value) {
+                        const date = new Date(value);
+                        const year = date.getFullYear();
+                        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                        const day = date.getDate().toString().padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    },
+                    rotate: 45,
+                },
+                min: function (value) {
+                    return new Date(value.min - (value.max - value.min) * 0.05);
+                },
+                max: function (value) {
+                    return new Date(value.max + (value.max - value.min) * 0.05);
+                },
+            },
+            yAxis: {
+                type: 'value',
+                axisTick: { show: false },
+                min: function (value) { return value.min - 100; },
+                max: function (value) { return value.max + 100; },
+                axisLabel: { show: false },
+                splitLine: { show: false },
+            },
+            series: seriesData,
+            legend: {  // 添加legend
+                data: origin_data.map(userData => userData[0].handle),  // 根据handle生成legend项
+                left: 'right',
+                orient: 'vertical' //垂直
+            }
+        };
+
+        myChart.setOption(option);
+    });
+
+</script>
+
+</body>
+</html>

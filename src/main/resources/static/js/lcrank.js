@@ -1,4 +1,6 @@
-
+setInterval(function() {
+    location.reload();
+}, 120000); // 每隔 120000 毫秒刷新一次页面
 // 跳转到第一页
 function firstPage() {
         updatePage(1);

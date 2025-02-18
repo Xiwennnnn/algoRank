@@ -15,4 +15,5 @@ public class AlgoUserDo {
     private String major;
     private Long lcId;
     private Long cfId;
+    private Long qq;
 }

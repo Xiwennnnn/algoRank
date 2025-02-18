@@ -15,4 +15,6 @@ public class RatingUserVo {
     private String lcUsername;
     @ExcelProperty(value = "CF用户名")
     private String cfUsername;
+    @ExcelProperty(value = "QQ号")
+    private Long qq;
 }

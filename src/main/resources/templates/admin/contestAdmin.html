@@ -1,10 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="zh-Hans">
+<link th:fragment="css" type="text/css" rel="stylesheet" th:href="@{/css/common.css}"/>
+<link th:fragment="css" type="text/css" rel="stylesheet" th:href="@{/css/contestAdmin.css}"/>
+<link th:fragment="css" type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script th:src="@{/js/contestAdmin.js}"></script>
+    <style>
+        #overlay {
+            display: none; /* 初始隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+            z-index: 1000; /* 确保在最上层 */
+        }
+    </style>
 </head>
 <body>
-
+<div th:replace="~{fragments/header.html}"></div>
+<div th:replace="~{fragments/addContest.html}"></div>
+<div id="overlay"></div>
+<div class="outerBox SelectBox" style="font-family: cursive, serif, sans-serif;">
+    <div class="TypeBox">
+        <label>比赛类型:</label>
+        <!--    类型选择 ACM or OI or All-->
+        <select id="typeSelect" onchange="changeContestType()">
+            <option value="ACM">ACM</option>
+            <option value="OI">OI</option>
+            <option value="All">全部</option>
+        </select>
+    </div>
+    <div class = "isOverBox">
+        <select id="isOverSelect" onchange="changeContestType()">
+            <option value="notOver">未结束</option>
+            <option value="isOver">已结束</option>
+        </select>
+    </div>
+    <div>
+        <button type="button" class="btn btn-info" onclick="addContest()">添加比赛</button>
+    </div>
+    <div class="PlatformBox">
+        <input type="checkbox" onchange="changeContestType()" id="othersCheckbox" checked> <img class="platformIcon" th:src="@{/icon/others.png}" alt="其他"/>
+        <input type="checkbox" onchange="changeContestType()" id="leetcodeCheckbox" checked> <img class="platformIcon" th:src="@{/icon/LcIcon.png}" alt="LeetCode"/>
+        <input type="checkbox" onchange="changeContestType()" id="codeforcesCheckbox" checked> <img class="platformIcon" th:src="@{/icon/CfIcon.png}" alt="Codeforces"/>
+        <input type="checkbox" onchange="changeContestType()" id="nowcoderCheckbox" checked> <img class="platformIcon" th:src="@{/icon/NcIcon.ico}" alt="牛客"/>
+        <input type="checkbox" onchange="changeContestType()" id="luoguCheckbox" checked> <img class="platformIcon" th:src="@{/icon/LgIcon.png}" alt="洛谷"/>
+    </div>
+</div>
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>比赛平台</th>
+            <th>比赛名称</th>
+            <th>比赛开始时间</th>
+            <th>比赛链接</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<div class="pagination outerBox">
+    <button onclick="firstPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/lleft.png}"/></button>
+    <button onclick="previousPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/left.png}"/></button>
+    第<input id="currentPage" type="text" value="1" onchange="gotoPage()" oninput="validateInput(this)" class="page-input"/>页
+    &nbsp;&nbsp;/&nbsp;&nbsp;共&nbsp;<span id="totalPage">1</span>&nbsp;页
+    <button onclick="nextPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/right.png}"/></button>
+    <button onclick="lastPage()" class="page-btn"><img class="pageicon" th:src="@{/icon/rright.png}"/></button>
+</div>
 </body>
 </html>

@@ -95,7 +95,7 @@ span.Knight {
     overflow: visible;
     position: relative;
     text-decoration: none;
-    background: url('/images/knight.png') no-repeat 100% 0;
+    background: url('../images/Knight.png') no-repeat 100% 0;
     background-size: 16px auto;
     padding-right: 19px;
 }
@@ -105,7 +105,7 @@ span.Guardian {
     overflow: visible;
     position: relative;
     text-decoration: none;
-    background: url('/images/guardian.png') no-repeat 100% 0;
+    background: url('../images/Guardian.png') no-repeat 100% 0;
     background-size: 16px auto;
     padding-right: 19px;
 }

@@ -14,7 +14,6 @@ public class ViewAspect {
     private static final String LC_A_LINK_STYLE = " cursor: pointer; position: relative;text-decoration: none;color: #000000; ";
     //private static final String LC_Rank_STYLE = "background: url('/images/%s.png') no-repeat 100 0; background-size: 16px 16px; padding-right: 19px;";
 
-
     private static final String CF_LINK_STYLE_TEMPLATE = " cursor: pointer;position: relative; %s text-decoration: none;color: %s; ";
     private static final String ColorTemplate = "<span style='%s color: %s;'>%s</span>";
     private static final String template = "<a style='%s' target='_blank' href='%s'>%s</a>";
@@ -45,6 +44,8 @@ public class ViewAspect {
 
         for (var rating : ((Page<?>)result).getRecords()) {
             if (rating instanceof CfRatingVo r) {
+                if (r.getRating() == null) r.setRating(0);
+                if (r.getMaxRating() == null) r.setMaxRating(0);
                 String color = ColorRender(r.getRating());
                 String maxColor = ColorRender(r.getMaxRating());
                 String userUrl = CodeforcesUserUrl + r.getUserName();
@@ -66,7 +67,7 @@ public class ViewAspect {
             return "red";
         }
         if (rating >= 2100) {
-            return "##FF8C00";
+            return "#FF8C00";
         }
         if (rating >= 1900) { //紫名
             return "#aa00aa";

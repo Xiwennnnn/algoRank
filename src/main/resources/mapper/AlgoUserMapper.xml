@@ -7,6 +7,7 @@
         <result column="major" javaType="java.lang.String" jdbcType="VARCHAR" property="major"/>
         <result column="lc_user_name" javaType="java.lang.String" jdbcType="VARCHAR" property="lcUsername"/>
         <result column="cf_user_name" javaType="java.lang.String" jdbcType="VARCHAR" property="cfUsername"/>
+        <result column="qq" javaType="java.lang.Long" jdbcType="BIGINT" property="qq"/>
     </resultMap>
     <select id="getRatingUsers" resultMap="RatingUserResultMap">
         SELECT
@@ -14,7 +15,8 @@
             algo_user.grade AS grade,
             algo_user.major AS major,
             lc_rating.user_name AS lc_user_name,
-            cf_rating.user_name AS cf_user_name
+            cf_rating.user_name AS cf_user_name,
+            algo_user.qq AS qq
         FROM algo_user
             LEFT JOIN lc_rating ON algo_user.lc_id = lc_rating.lc_id
             LEFT JOIN cf_rating ON algo_user.cf_id = cf_rating.cf_id

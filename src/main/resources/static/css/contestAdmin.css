@@ -1,0 +1,96 @@
+body {
+    font-family: cursive, serif, sans-serif;
+}
+
+
+
+body::before {
+    content: "";
+    background-size: cover;
+    z-index: -1;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    opacity: 0.15;
+}
+img.platformIcon {
+    width: 20px;
+    height: 20px;
+    margin-right: 20px;
+}
+div.outerBox {
+    margin-left: 100px;
+    margin-right: 100px;
+}
+select {
+    width: 100px;
+}
+div.PlatformBox {
+    margin-left: auto;
+    margin-right: 0;
+}
+div.SelectBox {
+    margin-bottom: 10px;
+    font-size: 18px;
+    display: flex;
+    font-weight: bold;
+    padding: 10px 15px;
+}
+div.isOverBox {
+    margin-left: 5px;
+}
+
+img.pageicon {
+    width: 20px;
+    height: 20px;
+    boder: none;
+}
+
+div.pagination {
+    display: flex;
+    justify-content: center; /* 居中对齐 */
+    align-items: center;
+    gap: 0; /* 去除间隙，按钮看起来更连贯 */
+    padding: 10px;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden; /* 确保圆角效果生效 */
+    width: auto; /* 自适应宽度 */
+    margin-left: auto;
+    margin-right: auto; /* 确保分页栏水平居中 */
+}
+
+div button {
+    color: black; /* 将按钮字体颜色设置为黑色 */
+    padding: 10px 16px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white; /* 按钮背景设置为白色 */
+}
+
+div button input {
+
+    width: 40px;
+    text-align: center;
+    border: none;
+    background: none;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.page-input {
+    font-family: cursive, serif, sans-serif;
+    font-size: 16px;
+    text-align: center;
+    width: 40px;
+    background-color: transparent;
+    border: none;
+    color: black; /* 设置输入框字体为黑色 */
+}

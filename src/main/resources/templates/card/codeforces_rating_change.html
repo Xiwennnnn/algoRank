@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <title>ECharts</title>
+    <script src="http://localhost/js/echarts.min.js"></script>
+    <script src="http://localhost/js/infographic.js"></script>
+    <style th:inline="css">
+        body {
+            font-family: "思源黑体 CN", Tahoma, Verdana, STHeiTi, simsun, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            position: relative;
+            background-color: #f4f3f3;
+            overflow: hidden;
+        }
+        body::before {
+            content: '© whpu算法协会';
+            position: absolute;
+            left: 0;
+            top: 220px;
+            width: 500px;
+            text-align: center;
+            font-size: 30px;
+            color: rgba(0, 0, 0, 0.2);
+            transform: rotate(-20deg);
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+
+</head>
+<body>
+<!--/*@thymesVar id="UserInfo" type="com.algo.data.dto.codeforces.CfRatingDto"*/-->
+<div th:class="${Level}" style="padding: 10px;width: 100%;height: 100%">
+    <div id="profile" style="width: 850px;height: 100px;margin-left: 70px;display: flex">
+        <img th:src="${UserInfo.avatar}" width="100px" height="100px" style="margin-right: 10px">
+        <div id="profile-info" style="width: auto;height: 100px;margin-right: 20px; display: flex;flex-direction: column;justify-items: center">
+            <label id="user-rank" th:text="${UserInfo.rank}" style="font-size: 20px">Master</label><br>
+            <span id="user-name" th:text="${UserInfo.userName}" style="font-size: 40px">user_name</span>
+        </div>
+        <div id="rating" style="width: 120px;margin-right: 30px; display: flex;flex-direction: column;align-items: center;justify-items: center">
+            <label style="font-size: 20px;color: #777777">当前Rating</label><br>
+            <span id="current-rating" style="font-size: 40px; align-items: center" th:text="${UserInfo.rating}">4000</span>
+        </div>
+        <div id="problem-solved" style="width: auto;display: flex;flex-direction: column;justify-items: center">
+            <label style="font-size: 25px;color: #777777;margin-bottom: 3px">题目共解决: <span id="solved-problem" style="font-size: 25px;color: #090909">0</span><br></label>
+            <label style="font-size: 25px;color: #777777">比赛共参加: <span id="contest-participate" style="font-size: 25px;color: #090909">0</span></label>
+            <label style="font-size: 25px;color: #777777;margin-top: 3px">虚拟比赛共参加: <span id="virtual-participate" style="font-size: 25px;color: #090909">0</span></label>
+        </div>
+        <img src="http://localhost/icon/CfIcon.png" width="50px" height="50px" style="margin-left: auto">
+    </div>
+    <div id="main" style="width: 850px;height:500px;margin-left: 70px"></div>
+    <div id="daily-data" style="width: 850px;height:500px;margin-left: 90px"></div>
+</div>
+<script th:inline="javascript">
+    function convertToReadableDate(seconds) {
+        const date = new Date(seconds * 1000);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function getColorByRating(rating) {
+        if (rating >= 3000) {
+            return '#8b0000'
+        } else if (rating >= 2400) {
+            return '#ff0000'
+        } else if (rating >= 2100) {
+            return '#FF8C00'
+        } else if (rating >= 1900) {
+            return '#aa00aa'
+        } else if (rating >= 1600) {
+            return '#0000ff'
+        } else if (rating >= 1400) {
+            return '#03A89E'
+        } else if (rating >= 1200) {
+            return '#008000'
+        } else if (rating === 0) {
+            return 'black'
+        } else {
+            return '#b0bec5'
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const changeData = /*[[${RatingChangesMetaData}]]*/ [];
+        renderMainChart(changeData);
+        const status = /*[[${HotSpotMapData}]]*/ [];
+        renderDailyDataChart(status);
+        const color = getColorByRating(/*[[${UserInfo.rating}]]*/ 3000);
+        console.log(color);
+        document.getElementById('current-rating').style.color = color;
+        document.getElementById('user-name').style.color = color;
+        document.getElementById('user-rank').style.color = color;
+        const problem_flag = new Map();
+        const contestant_flag = new Map();
+        const virtual_flag = new Map();
+        let problem_solved = 0;
+        let contest_participate = 0;
+        let virtual_participate = 0;
+        status.forEach(item => {
+            if (item.verdict === 'OK' && problem_flag.get(item.problem.name) === undefined) {
+                problem_solved++;
+                problem_flag.set(item.problem.name, true);
+            }
+            if (item.author.participantType === 'CONTESTANT' && contestant_flag.get(item.contestId) === undefined) {
+                contest_participate++;
+                contestant_flag.set(item.contestId, true);
+            }
+            if (item.author.participantType === 'VIRTUAL' && virtual_flag.get(item.contestId) === undefined) {
+                virtual_participate++;
+                virtual_flag.set(item.contestId, true);
+            }
+        })
+        console.log(problem_solved + ' ' +  contest_participate + ' ' + virtual_participate);
+        document.getElementById('solved-problem').textContent = (problem_solved).toString();
+        document.getElementById('contest-participate').textContent = (contest_participate).toString();
+        document.getElementById('virtual-participate').textContent = (virtual_participate).toString();
+    });
+
+    function renderDailyDataChart(data) {
+
+        const map = new Map();
+        data.forEach(item => {
+            const date = echarts.time.format(item.creationTimeSeconds * 1000, '{yyyy}-{MM}-{dd}', false);
+            map.set(date, (map.get(date) || 0) + 1);
+        })
+        var dom = document.getElementById('daily-data');
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+        const today = new Date();
+        const year = today.getFullYear().toString();
+        const today_str = today.getFullYear() + '-' +
+            String(today.getMonth() + 1).padStart(2, '0') + '-' +
+            String(today.getDate()).padStart(2, '0');
+        var option;
+        function getVirtualData(year) {
+            const data = [];
+            map.forEach((value, key) => {
+                data.push([
+                    key, value
+                ]);
+            });
+            return data;
+        }
+        option = {
+            tooltip: {},
+            visualMap: {
+                min: 0,
+                max: 10000,
+                type: 'piecewise',
+                show: false,
+                pieces: [
+                    {min: 1, max: 2, color: '#90d89d'},
+                    {min: 3, max: 4, color: '#76fd76'},
+                    {min: 5, max: 6, color: '#3fc262'},
+                    {min: 7, max: 9, color: '#2d9548'},
+                    {min: 10, color: '#216d39'}
+                ],
+                orient: 'horizontal',
+                left: 'center',
+                top: 65
+            },
+            calendar: {
+                top: 20,
+                left: 20,
+                right: 10,
+                cellSize: ['auto', 13],
+                range: [year, today_str],
+                itemStyle: {
+                    borderWidth: 0.5
+                },
+                dayLabel: {
+                    firstDay: 1,
+                    nameMap: 'ZH'
+                },
+                yearLabel: { show: false }
+            },
+            series: {
+                type: 'heatmap',
+                coordinateSystem: 'calendar',
+                data: getVirtualData(year)
+            }
+        };
+
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+    }
+
+    function renderMainChart(data) {
+
+
+        const rating_change_data = data.map(item => {
+            const readableDate = convertToReadableDate(item.ratingUpdateTimeSeconds);
+            return [readableDate, item.newRating];
+        });
+        let max_rating, last_rating_change;
+        if (rating_change_data.length > 0){
+            max_rating = Math.max(...rating_change_data.map(item => item[1]));
+            last_rating_change = rating_change_data[rating_change_data.length - 1][0];
+        }
+
+
+        const chartDom = document.getElementById('main');
+        const myChart = echarts.init(chartDom, "infographic");
+
+        const today = new Date()
+        const today_str = today.getFullYear() + '-' +
+            String(today.getMonth() + 1).padStart(2, '0') + '-' +
+            String(today.getDate()).padStart(2, '0');
+
+        option = {
+            animation: false,
+            xAxis: {
+                type: 'time',
+                axisLabel: {
+                    formatter: function (value) {
+                        const date = new Date(value);
+                        const year = date.getFullYear();
+                        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                        const day = date.getDate().toString().padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    },
+                    rotate: 20,
+                },
+                min: function (value) {
+                    return new Date(value.min - (value.max - value.min) * 0.05);
+                },
+                max: function (value) {
+                    return new Date(value.max + (value.max - value.min) * 0.05);
+                },
+            },
+            yAxis: {
+                type: 'value',
+                axisTick: {
+                    show: false
+                },
+                min: function (value) {
+                    return value.min - 100;
+                },
+                max: function (value) {
+                    return value.max + 100;
+                },
+                axisLabel: {
+                    show: false
+                },
+                splitLine: {
+                    show: false
+                }
+            },
+            grid: {
+                left: 42,
+                right:0,
+                top: 10,
+                bottom: 40
+            },
+            series: [{
+                data: rating_change_data,
+                type: 'line',
+                smooth: false,
+                label: {
+                    show: true,
+                    position: 'top',
+                    formatter: function (params) {
+                        if (params.data[1] >= max_rating || params.data[0] === last_rating_change) {
+                            return params.data[1]
+                        }
+                        return ""
+                    }
+                },
+                markArea: {
+                    silent: true,
+                    data: [
+                        [{ yAxis: 0 }, { yAxis: 1200, itemStyle: { color: '#b0bec5' } }],
+                        [{ yAxis: 1200 }, { yAxis: 1400, itemStyle: { color: '#76fd76' } }],
+                        [{ yAxis: 1400 }, { yAxis: 1600, itemStyle: { color: '#76dbba' } }],
+                        [{ yAxis: 1600 }, { yAxis: 1900, itemStyle: { color: '#a9a9fd' } }],
+                        [{ yAxis: 1900 }, { yAxis: 2100, itemStyle: { color: '#fd87fd' } }],
+                        [{ yAxis: 2100 }, { yAxis: 2300, itemStyle: { color: '#fdca87' } }],
+                        [{ yAxis: 2300 }, { yAxis: 2400, itemStyle: { color: '#fdba54' } }],
+                        [{ yAxis: 2400 }, { yAxis: 2600, itemStyle: { color: '#fd7676' } }],
+                        [{ yAxis: 2600 }, { yAxis: 3000, itemStyle: { color: '#fd3333' } }],
+                        [{ yAxis: 3000 }, { yAxis: 4000, itemStyle: { color: '#a90000' } }],
+                        [{ yAxis: 4000 }, { yAxis: 9999, itemStyle: { color: '#990000' } }],
+                    ]
+                },
+                markLine: {
+                    silent: true,
+                    symbol: 'none',
+                    label: {
+                        position: 'start',
+                        formatter: '{c}'
+                    },
+                    data: [
+                        { yAxis: 1200 },
+                        { yAxis: 1400 },
+                        { yAxis: 1600 },
+                        { yAxis: 1900 },
+                        { yAxis: 2100 },
+                        { yAxis: 2300 },
+                        { yAxis: 2400 },
+                        { yAxis: 2600 },
+                        { yAxis: 3000 },
+                        { yAxis: 4000 },
+
+                    ],
+                    lineStyle: {
+                        color: 'black',
+                        type: 'dashed'
+                    }
+                }
+            }]
+        };
+        option && myChart.setOption(option);
+    }
+
+
+
+</script>
+</body>
+</html>

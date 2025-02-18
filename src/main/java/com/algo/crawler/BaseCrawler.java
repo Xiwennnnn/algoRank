@@ -1,5 +1,6 @@
 package com.algo.crawler;
 
+import com.algo.exception.HttpRequestWrongException;
 import com.algo.util.HttpRequester;
 
 import java.io.IOException;
@@ -9,21 +10,19 @@ import java.util.*;
 
 public abstract class BaseCrawler {
 
-    protected String get(String url) throws IOException {
+    protected String get(String url) throws HttpRequestWrongException {
         try {
             return HttpRequester.get(url);
         } catch (IOException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Get Request failed: " + url);
+            throw new HttpRequestWrongException("Get请求失败: " + url);
         }
     }
 
-    protected String post(String url, String data, Map<String, String> headers) throws IOException {
+    protected String post(String url, String data, Map<String, String> headers) throws HttpRequestWrongException {
         try {
             return HttpRequester.post(url, data, headers);
         } catch (IOException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Post Request failed: " + url);
+            throw new HttpRequestWrongException("Post请求失败: " + url);
         }
     }
 

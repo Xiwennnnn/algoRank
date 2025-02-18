@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<script th:src="@{/js/contestAdmin.js}"></script>
+<div id="addContestFormDiv" th:fragment="addContestForm"
+     style="display:none;position:absolute;top:20%;width: 50%;z-index: 1002;background-color: white;padding: 20px;border-radius: 5px;margin-right: auto;margin-left: 20%">
+    <form id="addContestForm" class="form-horizontal" method="post" action="/admin/api/contest/updateOrSaveContest">
+        <input type="hidden" name="id" id="id">
+        <div class="row mb-3">
+            <label for="oj" class="col-sm-2 col-form-label">OJ名称</label>
+            <div class="col-sm-10">
+                <select class="form-select" id="oj" name="oj">
+                    <option>Codeforces</option>
+                    <option>LeetCode</option>
+                    <option>LuoGu</option>
+                    <option>NowCoder</option>
+                    <option>WHPU</option>
+                    <option>其他</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="name" class="col-sm-2 col-form-label">比赛名称</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="name" placeholder="请输入比赛名称" name="name">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">比赛开始时间</label>
+            <div class="col-sm-10">
+                <input type="datetime-local" class="form-control" id="startTime" name="startTime">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="endTime" class="col-sm-2 col-form-label">比赛结束时间</label>
+            <div class="col-sm-10">
+                <input type="datetime-local" class="form-control" id="endTime" name="endTime">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="status" class="col-sm-2 col-form-label">状态</label>
+            <div class="col-sm-10">
+                <select class="form-select" id="status" name="status">
+                    <option>Running</option>
+                    <option>Register</option>
+                    <option>Over</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="oiContest" class="col-sm-2 col-form-label">是否为OI赛制</label>
+            <div class="col-sm-10">
+                <select class="form-select" id="oiContest" name="oiContest">
+                    <option value="true">是</option>
+                    <option value="false">否</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="link" class="col-sm-2 col-form-label">比赛链接</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="link" placeholder="请输入比赛链接" name="link">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-info" id="modifyBtn">确定</button>
+                <button type="button" class="btn btn-info" id="cancelBtn" onclick="closeModifyModal()">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+</html>

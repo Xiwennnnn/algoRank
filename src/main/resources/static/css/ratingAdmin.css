@@ -1,3 +1,7 @@
+body {
+    font-family: cursive, serif, sans-serif;
+}
+
 * {
     margin: 0;
     padding: 0;

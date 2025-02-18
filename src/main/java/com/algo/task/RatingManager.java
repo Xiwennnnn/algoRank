@@ -8,8 +8,8 @@ import com.algo.crawler.scan.CrawlerScanner;
 import com.algo.data.converter.Converter;
 import com.algo.data.dao.CfRatingDo;
 import com.algo.data.dao.LcRatingDo;
-import com.algo.data.dto.CfRatingDto;
-import com.algo.data.dto.LcRatingDto;
+import com.algo.data.dto.codeforces.CfRatingDto;
+import com.algo.data.dto.leetcode.LcRatingDto;
 import com.algo.data.dto.RatingDto;
 import com.algo.data.mapper.AlgoUserMapper;
 import com.algo.data.mapper.CfRatingMapper;
@@ -24,6 +24,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,8 +43,10 @@ public class RatingManager {
     @Resource
     private AlgoUserMapper algoUserMapper;
 
+
+    // 调用yml配置的定时任务
     @Async
-    @Scheduled(fixedDelay = 60 * 60 * 1000)
+    @Scheduled(fixedDelay = 5 * 60 * 1000)
     @CacheEvict(
             cacheNames = {"cfRatingPageCache", "lcRatingPageCache", "cfRatingCache", "lcRatingCache"}
             , allEntries = true
@@ -69,9 +72,14 @@ public class RatingManager {
     private int crwlLcRating(LcRatingCrawler crawler) {
         int res = 0;
         List<String> usernames = lcRatingMapper.selectList(Wrappers.emptyWrapper()).stream().map(LcRatingDo::getUserName).toList();
+        if (usernames.isEmpty()) {
+            log.info("LeetCode 用户数据库为空，无需爬取评级信息");
+            return res;
+        }
         for (String username : usernames) {
             LcRatingDo lcRatingDO = null;
-            for (int i = 0; i < CRAWL_MAX_RETRY; i++) {
+            int i = 0;
+            for (i = 0; i < CRAWL_MAX_RETRY; i++) {
                 try {
                     LcRatingDto ratingDTO = (LcRatingDto) crawler.crawl(username);
                     lcRatingDO = Converter.convertLcRatingDTOToDO(ratingDTO);
@@ -79,6 +87,10 @@ public class RatingManager {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+            if (i == CRAWL_MAX_RETRY) {
+                log.error("LeetCode 用户{}爬取评级信息失败，重试次数达到上限", username);
+                continue;
             }
             UpdateWrapper<LcRatingDo> updateWrapper = new UpdateWrapper<>();
 
@@ -90,13 +102,19 @@ public class RatingManager {
     private int crwlCfRating(CfRatingCrawler crawler) {
         int res = 0;
         List<String> usernames = cfRatingMapper.selectList(Wrappers.emptyWrapper()).stream().map(CfRatingDo::getUserName).toList();
-        List<RatingDto> result = null;
-        for (int i = 0; i < CRAWL_MAX_RETRY; i++) {
-            try {
-                result = crawler.crawlALl(usernames);
-                break;
-            } catch (Exception e) {
-                e.printStackTrace();
+        List<RatingDto> result = new ArrayList<>();
+        if (usernames.isEmpty()) {
+            log.info("Codeforces 用户数据库为空，无需爬取评级信息");
+            return res;
+        }
+        for (String uname : usernames) {
+            for (int i = 0; i < CRAWL_MAX_RETRY; i++) {
+                try {
+                    result.add(crawler.crawl(uname));
+                    break;
+                } catch (Exception e) {
+                    log.error("Codeforces 用户{}爬取评级信息失败，重试次数达到上限", uname);
+                }
             }
         }
         for (RatingDto ratingDTO : result) {

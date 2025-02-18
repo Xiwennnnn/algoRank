@@ -44,6 +44,31 @@ public class HttpRequester {
         return readDataString(conn);
     }
 
+    public static byte[] getBytes(String address) throws IOException {
+        URL url = new URL(address);
+        HttpURLConnection conn = createConnection(url, HTTP_GET);
+        conn.connect();
+        return readDateBytes(conn);
+    }
+
+    public static byte[] postBytes(String address, String data, Map<String, String> headers) throws IOException {
+        URL url = new URL(address);
+        HttpURLConnection conn = createConnection(url, HTTP_POST);
+        for (String key : headers.keySet()) {
+            conn.setRequestProperty(key, headers.get(key));
+        }
+        conn.connect();
+
+        try (OutputStream outputStream = conn.getOutputStream()) {
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+                writer.write(data);
+                writer.flush();
+            }
+        }
+
+        return readDateBytes(conn);
+    }
+
     private static HttpURLConnection createConnection(URL url, String method) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setConnectTimeout(CONNECT_TIMEOUT);
@@ -53,8 +78,13 @@ public class HttpRequester {
         if (method.equals(HTTP_POST)) {
             conn.setDoOutput(true);
         }
-
         return conn;
+    }
+
+    private static byte[] readDateBytes(HttpURLConnection conn) throws IOException {
+        try (InputStream inputStream = conn.getInputStream()) {
+            return inputStream.readAllBytes();
+        }
     }
 
     private static String readDataString(HttpURLConnection conn) throws IOException {

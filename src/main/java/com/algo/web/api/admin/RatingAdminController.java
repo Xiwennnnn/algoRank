@@ -5,12 +5,15 @@ import com.algo.data.vo.RatingUserVo;
 import com.algo.service.RatingService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
+import lombok.extern.java.Log;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
+@Log
 @RequestMapping("/admin/api/rating")
-public class AdminController {
+public class RatingAdminController {
     @Resource
     private RatingService ratingService;
 
@@ -26,22 +29,40 @@ public class AdminController {
 
     @PostMapping("/update")
     public void update(@RequestBody RatingUserVo userData) {
-        ratingService.updateRating(userData);
+        try {
+            ratingService.updateRating(userData);
+        } catch (Exception e) {
+            log.warning(e.getMessage());
+        }
+
     }
 
     @DeleteMapping("/delete")
     public void delete(String realName) {
-        ratingService.deleteRating(realName);
+        try {
+            ratingService.deleteRating(realName);
+        } catch (Exception e) {
+            log.warning(e.getMessage());
+        }
+
     }
 
     @PostMapping("/create")
-    public void create(@RequestBody RatingUserVo ratingUserVo) {
-        ratingService.addAllRating(ratingUserVo);
+    public void create(RatingUserVo ratingUserVo) {
+        try {
+            ratingService.save(ratingUserVo);
+        } catch (Exception e) {
+            log.warning(e.getMessage());
+        }
+
     }
 
     @PostMapping("/upload")
-    public void upload(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) return;
+    public ModelAndView upload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return new ModelAndView("redirect:/admin/api/rating/upload");
+        }
         ratingService.upload(file);
+        return new ModelAndView("redirect:calendar");
     }
 }

@@ -1,5 +1,9 @@
 package com.algo.service.impl;
 
+import com.algo.bot.data.ErrorMsgEnum;
+import com.algo.crawler.rating.CfRatingCrawler;
+import com.algo.crawler.rating.LcRatingCrawler;
+import com.algo.data.common.MajorEnum;
 import com.algo.data.dao.AlgoUserDo;
 import com.algo.data.dao.CfRatingDo;
 import com.algo.data.dao.LcRatingDo;
@@ -12,6 +16,9 @@ import com.algo.data.mapper.AlgoUserMapper;
 import com.algo.data.mapper.CfRatingMapper;
 import com.algo.data.mapper.LcRatingMapper;
 import com.algo.data.vo.RatingUserVo;
+import com.algo.exception.HttpRequestWrongException;
+import com.algo.exception.RatingCrawlerWrongException;
+import com.algo.exception.UserModifyException;
 import com.algo.service.RatingService;
 
 import com.alibaba.excel.EasyExcel;
@@ -20,8 +27,8 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
@@ -46,6 +53,29 @@ public class RatingServiceImpl implements RatingService {
     private LcRatingMapper lcRatingMapper;
     @Resource
     private CfRatingMapper cfRatingMapper;
+    @Resource
+    private CfRatingCrawler cfRatingCrawler;
+    @Resource
+    private LcRatingCrawler lcRatingCrawler;
+
+    public RatingUserVo getUserVoByRealName(String realName) {
+        QueryWrapper<RatingUserVo> wrapper = new QueryWrapper<>();
+        wrapper.eq("real_name", realName);
+        List<RatingUserVo> res = algoUserMapper.getRatingUsers(new Page<>(1, 1), wrapper).getRecords();
+        if (res.isEmpty()) return null;
+        return res.get(0);
+    }
+
+
+    @Override
+    public AlgoUserDo getByRealName(String realName) {
+        return algoUserMapper.selectOne(Wrappers.<AlgoUserDo>lambdaQuery().eq(AlgoUserDo::getRealName, realName));
+    }
+
+    @Override
+    public AlgoUserDo getByQQ(Long qq) {
+        return algoUserMapper.selectOne(Wrappers.<AlgoUserDo>lambdaQuery().eq(AlgoUserDo::getQq, qq));
+    }
 
     @Override
     @Cacheable(
@@ -58,7 +88,12 @@ public class RatingServiceImpl implements RatingService {
             wrapper.like("name", lcRatingQuery.getName());
         }
         if (lcRatingQuery.getMajor() != null) {
-            wrapper.eq("major", lcRatingQuery.getMajor());
+            if ( lcRatingQuery.getMajor().equals("其他")) {
+                List<String> majors = MajorEnum.getAllMajorNames().stream().filter(m -> !m.equals("其他")).toList();
+                wrapper.notIn("major", majors);
+            } else {
+                wrapper.eq("major", lcRatingQuery.getMajor());
+            }
         }
         if (lcRatingQuery.getGrade() != null) {
             wrapper.eq("grade", lcRatingQuery.getGrade());
@@ -77,7 +112,12 @@ public class RatingServiceImpl implements RatingService {
             wrapper.like("name", cfRatingQuery.getName());
         }
         if (cfRatingQuery.getMajor() != null) {
-            wrapper.eq("major", cfRatingQuery.getMajor());
+            if (cfRatingQuery.getMajor().equals("其他")) {
+                List<String> majors = MajorEnum.getAllMajorNames().stream().filter(m -> !m.equals("其他")).toList();
+                wrapper.notIn("major", majors);
+            } else {
+                wrapper.eq("major", cfRatingQuery.getMajor());
+            }
         }
         if (cfRatingQuery.getGrade() != null) {
             wrapper.eq("grade", cfRatingQuery.getGrade());
@@ -96,7 +136,12 @@ public class RatingServiceImpl implements RatingService {
             wrapper.like("real_name", lcRatingQuery.getName());
         }
         if (lcRatingQuery.getMajor() != null) {
-            wrapper.eq("major", lcRatingQuery.getMajor());
+            if (lcRatingQuery.getMajor().equals("其他")) {
+                List<String> majors = MajorEnum.getAllMajorNames().stream().filter(m -> !m.equals("其他")).toList();
+                wrapper.notIn("major", majors);
+            } else {
+                wrapper.eq("major", lcRatingQuery.getMajor());
+            }
         }
         if (lcRatingQuery.getGrade() != null) {
             wrapper.eq("grade", lcRatingQuery.getGrade());
@@ -115,7 +160,12 @@ public class RatingServiceImpl implements RatingService {
             wrapper.like("real_name", cfRatingQuery.getName());
         }
         if (cfRatingQuery.getMajor() != null) {
-            wrapper.eq("major", cfRatingQuery.getMajor());
+            if (cfRatingQuery.getMajor().equals("其他")) {
+                List<String> majors = MajorEnum.getAllMajorNames().stream().filter(m -> !m.equals("其他")).toList();
+                wrapper.notIn("major", majors);
+            } else {
+                wrapper.eq("major", cfRatingQuery.getMajor());
+            }
         }
         if (cfRatingQuery.getGrade() != null) {
             wrapper.eq("grade", cfRatingQuery.getGrade());
@@ -130,7 +180,12 @@ public class RatingServiceImpl implements RatingService {
             wrapper.like("real_name", query.getName());
         }
         if (query.getMajor() != null) {
-            wrapper.eq("major", query.getMajor());
+            if (query.getMajor().equals("其他")) {
+                List<String> majors = MajorEnum.getAllMajorNames().stream().filter(m -> !m.equals("其他")).toList();
+                wrapper.notIn("major", majors);
+            } else {
+                wrapper.eq("major", query.getMajor());
+            }
         }
         if (query.getGrade() != null) {
             wrapper.eq("grade", query.getGrade());
@@ -143,10 +198,10 @@ public class RatingServiceImpl implements RatingService {
             cacheNames = {"cfRatingPageCache", "lcRatingPageCache", "cfRatingCache", "lcRatingCache"}
             , allEntries = true
     )
-    public void deleteRating(String realName) {
+    public void deleteRating(String realName) throws UserModifyException {
         AlgoUserDo userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("real_name", realName));
         if (userDo == null) {
-            return;
+            throw new RuntimeException("用户【" + realName + "】已经不存在");
         }
         if (userDo.getCfId() != null) {
             cfRatingMapper.deleteById(userDo.getCfId());
@@ -157,38 +212,40 @@ public class RatingServiceImpl implements RatingService {
         algoUserMapper.delete(Wrappers.<AlgoUserDo>query().eq("real_name", realName));
     }
 
-    public void deleteCfRating(String username) {
-        CfRatingDo cfRatingDo = cfRatingMapper.selectOne(Wrappers.<CfRatingDo>query().eq("user_name", username));
-        long cf_id = cfRatingDo.getCfId();
-        AlgoUserDo userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("cf_id", username));
-        cfRatingMapper.deleteById(cf_id);
+    public void deleteCfRating(Long id) {
+        AlgoUserDo userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("cf_id", id));
+        cfRatingMapper.deleteById(id);
         if (userDo.getLcId() == null) {
             algoUserMapper.deleteById(userDo.getUserId());
         }
     }
 
-    public void deleteLcRating(String username) {
-        LcRatingDo lcRatingDo = lcRatingMapper.selectOne(Wrappers.<LcRatingDo>query().eq("user_name", username));
-        long lc_id = lcRatingDo.getLcId();
-        AlgoUserDo userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("lc_id", username));
-        lcRatingMapper.deleteById(lc_id);
+    public void deleteLcRating(Long id) {
+        AlgoUserDo userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("lc_id", id));
+        lcRatingMapper.deleteById(id);
         if (userDo.getCfId() == null) {
             algoUserMapper.deleteById(userDo.getUserId());
         }
     }
 
     @Override
-    public Integer addLcRating(String username, String realName) {
+    public Integer addLcRating(String username, String realName) throws UserModifyException {
+        try {
+            lcRatingCrawler.crawl(username);
+        } catch (RatingCrawlerWrongException e) {
+            throw new UserModifyException("Lc用户【" + username + "】不存在，添加失败");
+        } catch (HttpRequestWrongException e) {
+            throw new UserModifyException(ErrorMsgEnum.NETWORK_ERROR.msg);
+        }
         AlgoUserDo userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("real_name", realName));
         if (userDo == null) {
             return 0;
         }
         if (username == null) {
-            lcRatingMapper.deleteById(userDo.getLcId());
+            deleteLcRating(userDo.getLcId());
             return 1;
         }
         if (userDo.getLcId() != null) {
-            System.out.println("user has lc rating");
             lcRatingMapper.deleteById(userDo.getLcId());
             LcRatingDo lcRatingDo = new LcRatingDo();
             lcRatingDo.setUserName(username);
@@ -208,14 +265,20 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public Integer addCfRating(String username, String realName) {
-
+    public Integer addCfRating(String username, String realName) throws UserModifyException {
+        try {
+            cfRatingCrawler.crawl(username);
+        } catch (RatingCrawlerWrongException e) {
+            throw new UserModifyException("Cf用户【" + username + "】不存在，添加失败");
+        } catch (HttpRequestWrongException e) {
+            throw new UserModifyException(ErrorMsgEnum.NETWORK_ERROR.msg);
+        }
         AlgoUserDo userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("real_name", realName));
         if (userDo == null) {
             return 0;
         }
         if (username == null) {
-            cfRatingMapper.deleteById(userDo.getCfId());
+            deleteCfRating(userDo.getCfId());
             return 1;
         }
         if (userDo.getCfId() != null) {
@@ -242,22 +305,34 @@ public class RatingServiceImpl implements RatingService {
             cacheNames = {"cfRatingPageCache", "lcRatingPageCache", "cfRatingCache", "lcRatingCache"}
             , allEntries = true
     )
-    public void addAllRating(RatingUserVo ratingUserVo) {
+    public void save(RatingUserVo ratingUserVo) throws UserModifyException {
         AlgoUserDo userDo = new AlgoUserDo();
+        if (ratingUserVo.getRealName() == null || ratingUserVo.getRealName().isEmpty()) {
+            throw new UserModifyException("用户名、年级和专业不能为空");
+        }
+        if (ratingUserVo.getGrade() == null || ratingUserVo.getGrade().isEmpty()) {
+            throw new UserModifyException("用户名、年级和专业不能为空");
+        }
+        if (ratingUserVo.getMajor() == null || ratingUserVo.getMajor().isEmpty()) {
+            throw new UserModifyException("用户名、年级和专业不能为空");
+        }
         AlgoUserDo user = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("real_name", ratingUserVo.getRealName()));
         String lcUsername = ratingUserVo.getLcUsername();
         String cfUsername = ratingUserVo.getCfUsername();
         if (user != null) {
-            addCfRating(cfUsername, ratingUserVo.getRealName());
-            addLcRating(lcUsername, ratingUserVo.getRealName());
-            return;
+            throw new UserModifyException("用户【" + ratingUserVo.getRealName() + "】已存在");
+        }
+        AlgoUserDo existQQ = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("qq", ratingUserVo.getQq()));
+        if (existQQ != null) {
+            throw new UserModifyException("QQ号码【" + ratingUserVo.getQq() + "】已存在");
         }
         userDo.setRealName(ratingUserVo.getRealName());
         userDo.setGrade(ratingUserVo.getGrade());
         userDo.setMajor(ratingUserVo.getMajor());
+        userDo.setQq(ratingUserVo.getQq());
         algoUserMapper.insert(userDo);
-        addCfRating(cfUsername, ratingUserVo.getRealName());
-        addLcRating(lcUsername, ratingUserVo.getRealName());
+        if (cfUsername != null && !cfUsername.isEmpty()) addCfRating(cfUsername, ratingUserVo.getRealName());
+        if (lcUsername != null && !lcUsername.isEmpty())addLcRating(lcUsername, ratingUserVo.getRealName());
     }
 
     @Override
@@ -265,26 +340,39 @@ public class RatingServiceImpl implements RatingService {
             cacheNames = {"cfRatingPageCache", "lcRatingPageCache", "cfRatingCache", "lcRatingCache"}
             , allEntries = true
     )
-    public void updateRating(RatingUserVo ratingUserVo) {
+    public void updateRating(RatingUserVo ratingUserVo) throws UserModifyException {
+        log.warn(ratingUserVo.toString());
+        AlgoUserDo userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("real_name", ratingUserVo.getRealName()));
+        if (userDo == null) {
+            throw new UserModifyException("用户【" + ratingUserVo.getRealName() + "】不存在");
+        }
+        AlgoUserDo existQQ = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("qq", ratingUserVo.getQq()));
+        if (existQQ != null && !existQQ.getRealName().equals(ratingUserVo.getRealName())) {
+            throw new UserModifyException("QQ号码【" + ratingUserVo.getQq() + "】已存在");
+        }
         String lcUsername = ratingUserVo.getLcUsername();
         String cfUsername = ratingUserVo.getCfUsername();
-        addCfRating(cfUsername, ratingUserVo.getRealName());
-        addLcRating(lcUsername, ratingUserVo.getRealName());
-        AlgoUserDo userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("real_name", ratingUserVo.getRealName()));
-        userDo.setGrade(ratingUserVo.getGrade());
-        userDo.setMajor(ratingUserVo.getMajor());
+        if (ratingUserVo.getLcUsername() != null) addLcRating(lcUsername, ratingUserVo.getRealName());
+        if (ratingUserVo.getCfUsername() != null) addCfRating(cfUsername, ratingUserVo.getRealName());
+        userDo = algoUserMapper.selectOne(Wrappers.<AlgoUserDo>query().eq("real_name", ratingUserVo.getRealName()));
+        if (ratingUserVo.getGrade() != null) userDo.setGrade(ratingUserVo.getGrade());
+        if (ratingUserVo.getMajor() != null) userDo.setMajor(ratingUserVo.getMajor());
         algoUserMapper.updateById(userDo);
     }
 
     @Override
-    public void upload(MultipartFile file) {
+    public void upload(MultipartFile file)  {
         try {
             InputStream is = file.getInputStream();
             AnalysisEventListener<RatingUserVo> listener = new AnalysisEventListener<RatingUserVo>() {
                 @Override
                 public void invoke(RatingUserVo ratingUserVo, AnalysisContext analysisContext) {
                     System.out.println(ratingUserVo);
-                    save(ratingUserVo);
+                    try {
+                        save(ratingUserVo);
+                    } catch (Exception e) {
+                        log.warn("用户【" + ratingUserVo.getRealName() + "】已存在");
+                    }
                 }
 
                 @Override
@@ -299,15 +387,5 @@ public class RatingServiceImpl implements RatingService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void save(RatingUserVo ratingUserVo) {
-        AlgoUserDo userDo = new AlgoUserDo();
-        userDo.setRealName(ratingUserVo.getRealName());
-        userDo.setGrade(ratingUserVo.getGrade());
-        userDo.setMajor(ratingUserVo.getMajor());
-        algoUserMapper.insert(userDo);
-        addCfRating(ratingUserVo.getCfUsername(), ratingUserVo.getRealName());
-        addLcRating(ratingUserVo.getLcUsername(), ratingUserVo.getRealName());
     }
 }

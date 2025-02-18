@@ -2,6 +2,7 @@ package com.algo.util;
 
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
+import org.springframework.security.crypto.encrypt.Encryptors;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;

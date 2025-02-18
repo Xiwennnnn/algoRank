@@ -1,24 +1,21 @@
-<html lang="zh-Hans" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="addRatingUser" id="light" class="white_content">
     <form action="/admin/api/rating/create" method="post" id="form_submit">
         <label for="name">姓名：</label>
-        <input type="text" id="name" value="" />
+        <input type="text" id="name" name="realName" value="" />
 
         <label for="major">专业：</label>
-        <input type="text" id="major" value="" />
+        <input type="text" id="major" name="major" value="" />
 
         <label for="grade">年级：</label>
-        <input type="text" id="grade" />
+        <input type="text" id="grade" name="grade" />
 
         <label for="leetcode_username">Lc用户名：</label>
-        <input type="text" id="leetcode_username" value="" />
+        <input type="text" id="leetcode_username" name="lcUsername" value="" />
 
         <label for="codeforces_username">Cf用户名：</label>
-        <input type="text" id="codeforces_username" value="" />
+        <input type="text" id="codeforces_username" name="cfUsername" value="" />
 
-        <input type="button" value="确认" class="button_beautiful ceshi" />
+        <input type="submit" value="确认" class="button_beautiful ceshi" />
         <input type="button" value="取消" class="button_beautiful" onclick="document.getElementById('light').style.display='none';document.getElementById('overlay').style.display='none'" />
     </form>
 </div>
-</body>
-</html>

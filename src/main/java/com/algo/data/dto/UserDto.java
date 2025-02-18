@@ -4,6 +4,7 @@ import com.algo.data.dao.UserDo;
 import com.algo.data.vo.UserVo;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
@@ -48,5 +49,8 @@ public class UserDto extends User {
         return userVo.isCaptain();
     }
 
-
+    @Override
+    public Collection<GrantedAuthority> getAuthorities() {
+        return AuthorityUtils.createAuthorityList(userVo.getRole());
+    }
 }

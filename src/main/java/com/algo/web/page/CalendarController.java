@@ -20,9 +20,14 @@ public class CalendarController {
     ContestController contestController;
     @RequestMapping(value = {"/calendar", "/"})
     public String calendar(Model model) {
-        List<ContestDto> contests = contestController.getAcmContests();
+        List<ContestDto> contests = contestController.getAcmContests(1);
         List<ContestVo> contestVos =  contests.stream().map(ContestLink::convert).collect(Collectors.toList());
         model.addAttribute("contests", contestVos);
         return "calendar";
+    }
+
+    @RequestMapping(value = "/global")
+    public String global(Model model) {
+        return "iron-globe";
     }
 }
